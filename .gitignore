@@ -23,3 +23,20 @@ ehthumbs_view.db
 .env.local
 .venv/
 node_modules/
+
+# Claude Code 本地状态（不要 commit，含 permissions + 可能 token）
+.claude/settings.local.json
+.claude/worktrees/
+.claude/plugins/
+.claude/projects/
+.claude/stats-cache.json
+.claude/history.jsonl
+.claude/telemetry/
+.claude/cache/
+.claude/backups/
+.claude/sessions/
+.claude/session-env/
+.claude/shell-snapshots/
+
+# ⚠️ 但保留 .claude/skills/（项目专用 skill，让另一台电脑 clone 后能直接用）
+!.claude/skills/
