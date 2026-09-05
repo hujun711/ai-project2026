@@ -1,0 +1,11 @@
+{
+  "promptDelete": true,
+  "alwaysUpdateLinks": true,
+  "newLinkFormat": "short",
+  "useMarkdownLinks": false,
+  "showUnsupportedFiles": false,
+  "showLineNumber": true,
+  "readableLineLength": true,
+  "livePreview": true,
+  "strictLineBreaks": false
+}

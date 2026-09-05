@@ -1,0 +1,12 @@
+{
+  "alwaysUpdateLinks": true,
+  "newLinkFormat": "short",
+  "useMarkdownLinks": false,
+  "newFileLocation": "current",
+  "attachmentFolderPath": "images",
+  "showLineNumber": true,
+  "showInlineTitle": true,
+  "readableLineLength": true,
+  "vimMode": false,
+  "livePreview": true
+}
