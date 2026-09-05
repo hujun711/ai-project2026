@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Lesson 0002 — 类型推导 vs 显式标注</title>
+<style>
+:root { --bg:#fbf8f3; --text:#1a1a2e; --accent:#9c2c2c; --muted:#6b6457; --code-bg:#f4f0e8; --border:#d4cfc4; --vibe:#2c5c2c; --vibe-bg:#e8e8d8; --step:#2c4c9c; }
+* { box-sizing: border-box; }
+body { background:var(--bg); color:var(--text); font-family:Georgia,"ETBook","Times New Roman",serif; max-width:760px; margin:2.5rem auto; padding:0 2rem; line-height:1.65; font-size:16px; }
+header { border-bottom:1px solid var(--border); padding-bottom:1.2em; margin-bottom:1.5em; }
+h1 { font-family:"Helvetica Neue",Arial,sans-serif; font-size:2em; margin:0 0 0.2em 0; letter-spacing:-0.01em; }
+h1 .badge { display:inline-block; font-size:0.4em; background:var(--accent); color:white; padding:0.2em 0.6em; border-radius:3px; vertical-align:middle; margin-right:0.5em; letter-spacing:0.05em; font-weight:600; }
+h1 .sub { display:block; font-size:0.55em; font-weight:400; color:var(--muted); margin-top:0.3em; }
+h2 { font-family:"Helvetica Neue",Arial,sans-serif; font-size:1.35em; margin:2em 0 0.5em 0; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:0.2em; }
+code { font-family:Menlo,Consolas,"Courier New",monospace; background:var(--code-bg); padding:0.1em 0.35em; border-radius:2px; font-size:0.88em; color:#5a2c2c; }
+pre { background:var(--code-bg); padding:1em 1.2em; border-left:3px solid var(--accent); overflow-x:auto; font-size:0.88em; line-height:1.55; border-radius:0 3px 3px 0; margin:0.6em 0; }
+pre code { background:none; padding:0; color:var(--text); }
+.side { float:right; clear:right; margin-right:-36%; width:30%; font-size:0.85em; color:var(--muted); background:#f0ebe1; padding:0.6em 0.9em; border-left:2px solid var(--border); margin-top:0.4em; line-height:1.5; }
+.step { background:white; border:1px solid var(--border); border-radius:4px; padding:1em 1.2em; margin:1.2em 0; position:relative; }
+.step::before { content:attr(data-n); position:absolute; top:-0.7em; left:0.6em; background:var(--step); color:white; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; font-size:0.8em; padding:0.2em 0.7em; border-radius:3px; letter-spacing:0.05em; }
+.step h3 { font-family:"Helvetica Neue",Arial,sans-serif; margin:0 0 0.6em 0; color:var(--text); font-size:1.1em; }
+.vibe { background:var(--vibe-bg); border-left:3px solid var(--vibe); padding:0.7em 1em; margin:1.2em 0; font-size:0.92em; border-radius:0 3px 3px 0; }
+.vibe::before { content:"💡 Vibe coding 视角"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--vibe); display:block; margin-bottom:0.3em; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; }
+.win { background:#e8f0e8; border:1px solid var(--vibe); border-radius:4px; padding:1em 1.2em; margin:2em 0; }
+.win::before { content:"🏁 你刚完成了什么"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--vibe); display:block; margin-bottom:0.5em; font-size:0.85em; letter-spacing:0.05em; text-transform:uppercase; }
+table { width:100%; border-collapse:collapse; margin:1em 0; font-size:0.92em; }
+th, td { border-bottom:1px solid var(--border); padding:0.5em 0.7em; text-align:left; vertical-align:top; }
+th { background:var(--code-bg); font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; color:var(--muted); }
+a { color:var(--accent); text-decoration:none; border-bottom:1px dotted var(--accent); }
+.next-lessons { background:var(--code-bg); border-radius:4px; padding:1em 1.2em; margin:2em 0; font-size:0.95em; }
+.next-lessons::before { content:"📚 配套 & 下一步"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--muted); display:block; margin-bottom:0.5em; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; }
+ul, ol { margin:0.5em 0; padding-left:1.4em; }
+li { margin:0.2em 0; }
+.meta { color:var(--muted); font-size:0.9em; margin-top:0.5em; }
+details { margin:0.8em 0; }
+summary { cursor:pointer; font-weight:600; color:var(--accent); padding:0.3em 0; }
+@media print { body { background:white; max-width:100%; font-size:11pt; padding:0 0.5in; } .step, .vibe, .win, .next-lessons { break-inside:avoid; } h2 { page-break-after:avoid; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="badge">LESSON 0002</span>类型推导 vs 显式标注<span class="sub">20 分钟 · 3 个判断标准</span></h1>
+  <p class="meta">对齐 <a href="../MISSION.md">MISSION</a> · <a href="../CURRICULUM.md">CURRICULUM</a> · 前置：<a href="./0001-typescript-first-function.html">L0001</a> · 后续：<a href="./0003-interface-and-type-alias.html">L0003</a></p>
+</header>
+
+<p>TS 的默认行为是<strong>推导</strong>，不是<strong>要求标注</strong>。这与 Java 完全不同 — Java 必须显式写类型，TS 不写也能跑。学会<strong>什么时候标注</strong>比学语法重要 — 因为 AI 生成的代码常常省略标注，你需要知道省略是否安全。</p>
+
+<h2>核心规则（3 条够了）</h2>
+
+<table>
+<tr><th>场景</th><th>该标注吗</th><th>原因</th></tr>
+<tr>
+  <td>函数参数</td>
+  <td><strong>必须</strong></td>
+  <td>TS 不会从上下文推参数类型，漏写 = <code>any</code></td>
+</tr>
+<tr>
+  <td>函数返回值</td>
+  <td>可选</td>
+  <td>TS 会从 return 语句推导，显式标注当<strong>文档</strong>用</td>
+</tr>
+<tr>
+  <td>变量初值</td>
+  <td>能不写就不写</td>
+  <td>推导的<strong>字面量类型</strong>更精确（如 <code>5</code> 而非 <code>number</code>）</td>
+</tr>
+</table>
+
+<p class="side">Java 类比：Java 10+ 的 <code>var</code> 就是 TS 推导。差别是 TS 推导贯穿整个项目（贯穿函数边界），Java 的 var 只在局部变量。<br>TS 字面量类型 ≈ <code>final int MAX = 100</code> 中 100 的类型 — 但 TS 会<strong>自动</strong>推得更窄。</p>
+
+<h2>Demo：3 段对比</h2>
+
+<p>复制到 <code>src/inference.ts</code>，跑 <code>tsx src/inference.ts</code>：</p>
+<pre><code>// =============================================
+// 1. 变量：让 TS 推导，不要手写
+// =============================================
+let name = "hujun";        // 推导为 string
+const age = 30;            // 推导为 30（字面量，不是 number！）
+const status = "active";   // 推导为 "active"（不是 string！）
+
+// 反例（不要这样写）：
+// let name: string = "hujun";   // 重复 — TS 已经知道
+
+// =============================================
+// 2. 函数：参数必须标，返回值看心情
+// =============================================
+
+// ❌ 错的（参数没标，TS 静默放行 a=any, b=any）
+// function add(a, b) { return a + b; }
+
+// ✅ 正确写法
+function add(a: number, b: number) {
+  return a + b;   // 返回类型 TS 推导为 number
+}
+
+// 想把返回类型当文档写？也行
+function greet(name: string): string {
+  return `Hello, ${name}`;
+}
+
+// =============================================
+// 3. 对象/数组：初值歧义时显式标
+// =============================================
+
+// 没有初值 → TS 推 any，必须标
+let userInput: { name: string; age: number };
+userInput = { name: "x", age: 30 };
+
+// 有初值 → TS 推导够用
+const config = {
+  port: 3000,        // 推导为 3000
+  debug: true,       // 推导为 true
+};
+
+// 想让 TS 推更宽的类型（比如 port 真的是 number）
+const config2: { port: number; debug: boolean } = {
+  port: 3000,
+  debug: true,
+};</code></pre>
+
+<h2>3 个易错点</h2>
+
+<h3>① <code>const</code> 推字面量类型 — 重要！</h3>
+<pre><code>const x = 5;          // 类型：5（不是 number！）
+let y = 5;            // 类型：number
+
+// 想让 const 推成 number？两种办法：
+const z: number = 5;              // 显式标
+const w = 5 as number;            // 类型断言
+
+// 这会影响函数参数匹配：
+function expectNumber(n: number) {}
+expectNumber(x);  // ❌ 错！5 不是 number</code></pre>
+
+<h3>② 函数返回 <code>null</code> / <code>undefined</code> 的隐性陷阱</h3>
+<pre><code>// 推导返回类型可能漏掉 undefined
+function find(id: number) {
+  if (id &lt; 0) return;
+  return { id, name: "x" };
+}
+// TS 推导返回类型：{ id: number; name: string } | undefined
+// 你以为它一定返回对象，实际可能 undefined — 加 strictNullChecks 后编译器会提醒</code></pre>
+
+<h3>③ <code>as const</code> 把对象/数组变成只读字面量</h3>
+<pre><code>// 普通数组
+const routes = ["/", "/about"];       // 类型：string[]
+const routesConst = ["/", "/about"] as const;
+// 类型：readonly ["/", "/about"]
+
+// 配合 typeof 取字面量联合
+type Route = typeof routesConst[number];
+// 类型："/" | "/about"</code></pre>
+
+<div class="vibe">
+<strong>vibe coding 实战</strong>：让 Claude Code 写代码时——
+<ul>
+  <li><strong>函数签名</strong>：你写清楚（参数 + 返回类型）→ AI 写实现</li>
+  <li><strong>变量初值</strong>：你给一个有代表性的值 → AI 不必重复</li>
+  <li><strong>想要字面量类型</strong>：明确告诉 AI "用 <code>as const</code>"，否则它会默认 <code>string</code></li>
+</ul>
+类型是给 LLM 的 prompt — 标注清楚 = 任务边界清晰，AI 错误率降低。
+</div>
+
+<h2>Quiz 自测（5 题）</h2>
+<ol>
+  <li><code>const x = 5;</code> 的类型是？<br>
+    A. <code>number</code> &nbsp; B. <code>5</code>（字面量）&nbsp; C. <code>any</code> &nbsp; D. <code>unknown</code></li>
+  <li><code>function add(a, b) { return a + b; }</code> 会怎样？<br>
+    A. 编译通过，<code>a</code>/<code>b</code> 是 <code>number</code> &nbsp; B. 编译错误 &nbsp; C. 编译通过，但 <code>a</code>/<code>b</code> 是 <code>any</code> &nbsp; D. 自动推断为 <code>string</code></li>
+  <li>哪个场景<strong>必须</strong>显式标注类型？<br>
+    A. <code>let x = 5</code> &nbsp; B. 函数参数 &nbsp; C. <code>const y = "hi"</code> &nbsp; D. <code>return 42</code></li>
+  <li>想让 const 数组保留精确字面量类型，应该？<br>
+    A. <code>as const</code> &nbsp; B. <code>: string[]</code> &nbsp; C. <code>: Array&lt;string&gt;</code> &nbsp; D. 不可能</li>
+  <li>vibe coding 时，让 AI 写函数体，你应该？<br>
+    A. 只描述意图 &nbsp; B. 给完整函数签名（参数 + 返回类型） &nbsp; C. 让 AI 自己决定 &nbsp; D. 不写函数</li>
+</ol>
+<details><summary>答案</summary>
+<p>1. B（字面量 <code>5</code>） · 2. C（参数变 <code>any</code>） · 3. B（函数参数） · 4. A（<code>as const</code>） · 5. B（完整函数签名）</p>
+</details>
+
+<div class="win">
+<strong>🏁 你完成了</strong>
+<ul>
+  <li>理解 TS 默认推导 vs 显式标注的边界</li>
+  <li>知道 <code>const</code> 推字面量、<code>as const</code> 的用法</li>
+  <li>能在 vibe coding 时给 AI 正确的类型引导</li>
+</ul>
+</div>
+
+<div class="next-lessons">
+<ul>
+  <li>📘 配套速查表：<a href="../reference/0001-typescript-for-java-devs.html">TS for Java Devs §2 类型基础</a></li>
+  <li>🔜 <strong>Lesson 0003</strong>：<a href="./0003-interface-and-type-alias.html">Interface & Type Alias — 什么时候用哪个</a></li>
+  <li>🎯 <a href="../MISSION.md">MISSION</a> · <a href="../CURRICULUM.md">CURRICULUM</a> · <a href="../RESOURCES.md">RESOURCES</a></li>
+</ul>
+</div>
+
+</body>
+</html>

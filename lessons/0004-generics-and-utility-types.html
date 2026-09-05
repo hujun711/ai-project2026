@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Lesson 0004 — 泛型与工具类型</title>
+<style>
+:root { --bg:#fbf8f3; --text:#1a1a2e; --accent:#9c2c2c; --muted:#6b6457; --code-bg:#f4f0e8; --border:#d4cfc4; --vibe:#2c5c2c; --vibe-bg:#e8e8d8; --step:#2c4c9c; }
+* { box-sizing: border-box; }
+body { background:var(--bg); color:var(--text); font-family:Georgia,"ETBook","Times New Roman",serif; max-width:760px; margin:2.5rem auto; padding:0 2rem; line-height:1.65; font-size:16px; }
+header { border-bottom:1px solid var(--border); padding-bottom:1.2em; margin-bottom:1.5em; }
+h1 { font-family:"Helvetica Neue",Arial,sans-serif; font-size:2em; margin:0 0 0.2em 0; letter-spacing:-0.01em; }
+h1 .badge { display:inline-block; font-size:0.4em; background:var(--accent); color:white; padding:0.2em 0.6em; border-radius:3px; vertical-align:middle; margin-right:0.5em; letter-spacing:0.05em; font-weight:600; }
+h1 .sub { display:block; font-size:0.55em; font-weight:400; color:var(--muted); margin-top:0.3em; }
+h2 { font-family:"Helvetica Neue",Arial,sans-serif; font-size:1.35em; margin:2em 0 0.5em 0; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:0.2em; }
+code { font-family:Menlo,Consolas,"Courier New",monospace; background:var(--code-bg); padding:0.1em 0.35em; border-radius:2px; font-size:0.88em; color:#5a2c2c; }
+pre { background:var(--code-bg); padding:1em 1.2em; border-left:3px solid var(--accent); overflow-x:auto; font-size:0.88em; line-height:1.55; border-radius:0 3px 3px 0; margin:0.6em 0; }
+pre code { background:none; padding:0; color:var(--text); }
+.side { float:right; clear:right; margin-right:-36%; width:30%; font-size:0.85em; color:var(--muted); background:#f0ebe1; padding:0.6em 0.9em; border-left:2px solid var(--border); margin-top:0.4em; line-height:1.5; }
+.step { background:white; border:1px solid var(--border); border-radius:4px; padding:1em 1.2em; margin:1.2em 0; position:relative; }
+.step::before { content:attr(data-n); position:absolute; top:-0.7em; left:0.6em; background:var(--step); color:white; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; font-size:0.8em; padding:0.2em 0.7em; border-radius:3px; letter-spacing:0.05em; }
+.step h3 { font-family:"Helvetica Neue",Arial,sans-serif; margin:0 0 0.6em 0; color:var(--text); font-size:1.1em; }
+.vibe { background:var(--vibe-bg); border-left:3px solid var(--vibe); padding:0.7em 1em; margin:1.2em 0; font-size:0.92em; border-radius:0 3px 3px 0; }
+.vibe::before { content:"💡 Vibe coding 视角"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--vibe); display:block; margin-bottom:0.3em; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; }
+.win { background:#e8f0e8; border:1px solid var(--vibe); border-radius:4px; padding:1em 1.2em; margin:2em 0; }
+.win::before { content:"🏁 你刚完成了什么"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--vibe); display:block; margin-bottom:0.5em; font-size:0.85em; letter-spacing:0.05em; text-transform:uppercase; }
+table { width:100%; border-collapse:collapse; margin:1em 0; font-size:0.92em; }
+th, td { border-bottom:1px solid var(--border); padding:0.5em 0.7em; text-align:left; vertical-align:top; }
+th { background:var(--code-bg); font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; color:var(--muted); }
+a { color:var(--accent); text-decoration:none; border-bottom:1px dotted var(--accent); }
+.next-lessons { background:var(--code-bg); border-radius:4px; padding:1em 1.2em; margin:2em 0; font-size:0.95em; }
+.next-lessons::before { content:"📚 配套 & 下一步"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--muted); display:block; margin-bottom:0.5em; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; }
+ul, ol { margin:0.5em 0; padding-left:1.4em; }
+li { margin:0.2em 0; }
+.meta { color:var(--muted); font-size:0.9em; margin-top:0.5em; }
+@media print { body { background:white; max-width:100%; font-size:11pt; padding:0 0.5in; } .step, .vibe, .win, .next-lessons { break-inside:avoid; } h2 { page-break-after:avoid; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="badge">LESSON 0004</span>泛型与工具类型<span class="sub">30 分钟 · 读懂 90% 库的类型签名</span></h1>
+  <p class="meta">对齐 <a href="../MISSION.md">MISSION</a> · <a href="../CURRICULUM.md">CURRICULUM</a> · 前置：<a href="./0003-interface-and-type-alias.html">L0003</a> · 后续：<a href="./0005-union-types-and-narrowing.html">L0005</a></p>
+</header>
+
+<p>读 React / Next.js / tRPC 源码，你会不停看到 <code>&lt;T&gt;</code>、<code>Pick&lt;X, K&gt;</code>、<code>Partial&lt;X&gt;</code>、<code>Omit&lt;X, K&gt;</code>。这节课让你<strong>能读</strong>这些符号，而不是<strong>手写</strong>它们。</p>
+
+<h2>泛型：几乎和 Java 一样（一个关键差别）</h2>
+
+<pre><code>// 基础泛型
+function identity&lt;T&gt;(value: T): T {
+  return value;
+}
+const r1 = identity&lt;string&gt;("hello");   // 显式指定
+const r2 = identity(42);                 // TS 推 T = number
+
+// 约束（extends ≈ Java 的 extends Comparable）
+function longest&lt;T extends { length: number }&gt;(a: T, b: T): T {
+  return a.length &gt;= b.length ? a : b;
+}</code></pre>
+
+<p class="side">Java 类比：<code>&lt;T extends ...&gt;</code> 语法几乎一致。<br><strong>关键差别</strong>：TS 泛型<strong>不擦除</strong>，运行时还能读到类型元数据（通过 <code>Symbol.toStringTag</code>）。Java 泛型是擦除的，运行时 List&lt;String&gt; 和 List&lt;Integer&gt; 是同一个类。</p>
+
+<h2>工具类型速查（5 个就够覆盖 90% 场景）</h2>
+
+<table>
+<tr><th>工具类型</th><th>作用</th><th>典型场景</th></tr>
+<tr><td><code>Partial&lt;T&gt;</code></td><td>所有字段可选</td><td>更新对象（PATCH）</td></tr>
+<tr><td><code>Required&lt;T&gt;</code></td><td>所有字段必填</td><td>补全 <code>?:</code> 漏掉的字段</td></tr>
+<tr><td><code>Pick&lt;T, K&gt;</code></td><td>选指定字段</td><td>列表项只展示部分字段</td></tr>
+<tr><td><code>Omit&lt;T, K&gt;</code></td><td>排除指定字段</td><td>创建对象时去除 id / createdAt</td></tr>
+<tr><td><code>Record&lt;K, V&gt;</code></td><td>键值对类型</td><td>字典 / 配置对象</td></tr>
+</table>
+
+<h2>Demo：读懂真实代码</h2>
+
+<p>复制到 <code>src/user-types.ts</code>：</p>
+<pre><code>// =============================================
+// 基础类型（你定义）
+// =============================================
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  age: number;
+  createdAt: Date;
+}
+
+// =============================================
+// 工具类型派生（让 AI 别重复定义）
+// =============================================
+
+// 创建用户时不传 id 和 createdAt（数据库生成）
+type UserInput = Omit&lt;User, 'id' | 'createdAt'&gt;;
+// 等价于：{ name: string; email: string; age: number; }
+
+// 更新用户时所有字段都可选
+type UserPatch = Partial&lt;User&gt;;
+// 等价于：{ id?: number; name?: string; ... }
+
+// 列表项只展示 id + name
+type UserSummary = Pick&lt;User, 'id' | 'name'&gt;;
+// 等价于：{ id: number; name: string; }
+
+// 用户字典（按 id 索引）
+type UserMap = Record&lt;number, User&gt;;
+// 等价于：{ [key: number]: User }
+
+// =============================================
+// 派生函数返回类型（不用手抄）
+// =============================================
+function getUser() {
+  return { id: 1, name: 'hujun' };
+}
+
+type GetUserReturn = ReturnType&lt;typeof getUser&gt;;
+// 自动派生：{ id: number; name: string }
+
+// =============================================
+// 实战：拼装出来的完整 API 签名
+// =============================================
+async function createUser(
+  input: UserInput
+): Promise&lt;User&gt; {
+  // ... 让 AI 写实现
+  return { ...input, id: 1, createdAt: new Date() };
+}
+
+async function updateUser(
+  id: number,
+  patch: UserPatch
+): Promise&lt;User&gt; {
+  // ... 让 AI 写实现
+  return {} as User;
+}
+
+async function listUsers(): Promise&lt;UserSummary[]&gt; {
+  // ... 让 AI 写实现
+  return [];
+}</code></pre>
+
+<h2>嵌套泛型怎么读（实战高频）</h2>
+
+<pre><code>// Next.js 的页面 props 类型
+type PageProps&lt;TParams = {}&gt; = {
+  params: TParams;
+  searchParams: { [key: string]: string | string[] | undefined };
+};
+
+// tRPC 的 query hook
+type UseQueryResult&lt;TData, TError&gt; = {
+  data: TData | undefined;
+  error: TError | null;
+  isLoading: boolean;
+};
+
+// 读法：从外到内，先看「这个类型干什么」，再看「T 是什么」
+// 例：UseQueryResult&lt;User, Error&gt;
+// → 返回 { data: User | undefined; error: Error | null; ... }</code></pre>
+
+<h2>3 个常见泛型错误代码</h2>
+
+<h3>① 把 <code>Array</code> 和数组字面量搞混</h3>
+<pre><code>function first(arr: Array&lt;string&gt;): string { return arr[0]; }
+function firstAlt(arr: string[]): string { return arr[0]; }
+// 等价。第二种更常用、更短。</code></pre>
+
+<h3>② 约束写错位置</h3>
+<pre><code>// ❌ 错
+function f&lt;T&gt;(x: T extends number): void {}
+
+// ✅ 对
+function f&lt;T extends number&gt;(x: T): void {}</code></pre>
+
+<h3>③ 默认值语法（Java 没有）</h3>
+<pre><code>type PageProps&lt;TParams = Record&lt;string, never&gt;&gt; = { params: TParams };
+// 不传时 params 是空对象 {}</code></pre>
+
+<div class="vibe">
+<strong>vibe coding 实战</strong>：
+<ul>
+  <li><strong>派生类型用工具类型</strong>，别让 AI 重新定义 → <code>type X = Omit&lt;User, 'id'&gt;</code> 比 <code>type X = { name: string; email: string; ... }</code> 强 10 倍</li>
+  <li><strong>读库签名时</strong>，用鼠标 hover 任何泛型参数，IDE 会告诉你具体类型 — 不必死记</li>
+  <li><strong>让 AI 实现函数体</strong>前，先用 <code>Pick</code>/<code>Omit</code>/<code>Partial</code> 派生出输入输出类型，AI 几乎不会返错</li>
+</ul>
+</div>
+
+<h2>Quiz 自测（5 题）</h2>
+<ol>
+  <li><code>Pick&lt;User, 'id' | 'name'&gt;</code> 等价于？<br>
+    A. <code>{ id?: number; name?: string; }</code> &nbsp; B. <code>{ id: number; name: string; }</code> &nbsp; C. <code>User</code></li>
+  <li><code>Omit&lt;User, 'id' | 'createdAt'&gt;</code> 等价于？<br>
+    A. <code>Pick&lt;User, 'id' | 'createdAt'&gt;</code> &nbsp; B. <code>User</code> 去掉 id 和 createdAt &nbsp; C. <code>User</code> 的所有字段变可选</li>
+  <li><code>Partial&lt;T&gt;</code> 把 T 的字段变成？<br>
+    A. 可选 &nbsp; B. 必填 &nbsp; C. 只读</li>
+  <li><code>ReturnType&lt;typeof f&gt;</code> 拿什么？<br>
+    A. f 的参数类型 &nbsp; B. f 的返回类型 &nbsp; C. f 的名字</li>
+  <li>TS 泛型和 Java 泛型的关键差别？<br>
+    A. TS 不支持 &nbsp; B. TS 运行时仍保留类型元数据（不擦除） &nbsp; C. TS 性能更差</li>
+</ol>
+<details><summary>答案</summary>
+<p>1. B · 2. B · 3. A · 4. B · 5. B</p>
+</details>
+
+<div class="win">
+<strong>🏁 你完成了</strong>
+<ul>
+  <li>能读懂 <code>&lt;T&gt;</code>、<code>Pick</code>/<code>Omit</code>/<code>Partial</code>/<code>Record</code>/<code>ReturnType</code></li>
+  <li>知道派生类型是 vibe coding 减少重复的关键</li>
+  <li>对 Next.js / tRPC 泛型签名不再发怵</li>
+</ul>
+</div>
+
+<div class="next-lessons">
+<ul>
+  <li>📘 配套速查表：<a href="../reference/0001-typescript-for-java-devs.html">TS for Java Devs §4 泛型 + §10 工具类型</a></li>
+  <li>🔜 <strong>Lesson 0005</strong>：<a href="./0005-union-types-and-narrowing.html">联合类型与 Narrowing — TS 比 Java 强的地方</a></li>
+  <li>🎯 <a href="../MISSION.md">MISSION</a> · <a href="../CURRICULUM.md">CURRICULUM</a></li>
+</ul>
+</div>
+
+</body>
+</html>

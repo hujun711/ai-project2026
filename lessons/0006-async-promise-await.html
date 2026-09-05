@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Lesson 0006 — Async / Promise / await</title>
+<style>
+:root { --bg:#fbf8f3; --text:#1a1a2e; --accent:#9c2c2c; --muted:#6b6457; --code-bg:#f4f0e8; --border:#d4cfc4; --vibe:#2c5c2c; --vibe-bg:#e8e8d8; --step:#2c4c9c; }
+* { box-sizing: border-box; }
+body { background:var(--bg); color:var(--text); font-family:Georgia,"ETBook","Times New Roman",serif; max-width:760px; margin:2.5rem auto; padding:0 2rem; line-height:1.65; font-size:16px; }
+header { border-bottom:1px solid var(--border); padding-bottom:1.2em; margin-bottom:1.5em; }
+h1 { font-family:"Helvetica Neue",Arial,sans-serif; font-size:2em; margin:0 0 0.2em 0; letter-spacing:-0.01em; }
+h1 .badge { display:inline-block; font-size:0.4em; background:var(--accent); color:white; padding:0.2em 0.6em; border-radius:3px; vertical-align:middle; margin-right:0.5em; letter-spacing:0.05em; font-weight:600; }
+h1 .sub { display:block; font-size:0.55em; font-weight:400; color:var(--muted); margin-top:0.3em; }
+h2 { font-family:"Helvetica Neue",Arial,sans-serif; font-size:1.35em; margin:2em 0 0.5em 0; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:0.2em; }
+code { font-family:Menlo,Consolas,"Courier New",monospace; background:var(--code-bg); padding:0.1em 0.35em; border-radius:2px; font-size:0.88em; color:#5a2c2c; }
+pre { background:var(--code-bg); padding:1em 1.2em; border-left:3px solid var(--accent); overflow-x:auto; font-size:0.88em; line-height:1.55; border-radius:0 3px 3px 0; margin:0.6em 0; }
+pre code { background:none; padding:0; color:var(--text); }
+.side { float:right; clear:right; margin-right:-36%; width:30%; font-size:0.85em; color:var(--muted); background:#f0ebe1; padding:0.6em 0.9em; border-left:2px solid var(--border); margin-top:0.4em; line-height:1.5; }
+.step { background:white; border:1px solid var(--border); border-radius:4px; padding:1em 1.2em; margin:1.2em 0; position:relative; }
+.step::before { content:attr(data-n); position:absolute; top:-0.7em; left:0.6em; background:var(--step); color:white; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; font-size:0.8em; padding:0.2em 0.7em; border-radius:3px; letter-spacing:0.05em; }
+.step h3 { font-family:"Helvetica Neue",Arial,sans-serif; margin:0 0 0.6em 0; color:var(--text); font-size:1.1em; }
+.vibe { background:var(--vibe-bg); border-left:3px solid var(--vibe); padding:0.7em 1em; margin:1.2em 0; font-size:0.92em; border-radius:0 3px 3px 0; }
+.vibe::before { content:"💡 Vibe coding 视角"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--vibe); display:block; margin-bottom:0.3em; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; }
+.win { background:#e8f0e8; border:1px solid var(--vibe); border-radius:4px; padding:1em 1.2em; margin:2em 0; }
+.win::before { content:"🏁 你刚完成了什么"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--vibe); display:block; margin-bottom:0.5em; font-size:0.85em; letter-spacing:0.05em; text-transform:uppercase; }
+table { width:100%; border-collapse:collapse; margin:1em 0; font-size:0.92em; }
+th, td { border-bottom:1px solid var(--border); padding:0.5em 0.7em; text-align:left; vertical-align:top; }
+th { background:var(--code-bg); font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; color:var(--muted); }
+a { color:var(--accent); text-decoration:none; border-bottom:1px dotted var(--accent); }
+.next-lessons { background:var(--code-bg); border-radius:4px; padding:1em 1.2em; margin:2em 0; font-size:0.95em; }
+.next-lessons::before { content:"📚 配套 & 下一步"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--muted); display:block; margin-bottom:0.5em; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; }
+ul, ol { margin:0.5em 0; padding-left:1.4em; }
+li { margin:0.2em 0; }
+.meta { color:var(--muted); font-size:0.9em; margin-top:0.5em; }
+@media print { body { background:white; max-width:100%; font-size:11pt; padding:0 0.5in; } .step, .vibe, .win, .next-lessons { break-inside:avoid; } h2 { page-break-after:avoid; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="badge">LESSON 0006</span>Async / Promise / await<span class="sub">25 分钟 · 读懂异步链</span></h1>
+  <p class="meta">对齐 <a href="../MISSION.md">MISSION</a> · <a href="../CURRICULUM.md">CURRICULUM</a> · 前置：<a href="./0005-union-types-and-narrowing.html">L0005</a> · 后续：<a href="./0007-module-system-and-tsconfig.html">L0007</a></p>
+</header>
+
+<p>读 Next.js / tRPC 代码，async 函数无处不在。这节课让你<strong>能读懂</strong>异步链：返回类型、错误处理、并发控制。Java 已经有 <code>CompletableFuture</code>，TS 的 <code>Promise</code> 类似但语法更简洁。</p>
+
+<h2>3 个核心概念</h2>
+
+<table>
+<tr><th>概念</th><th>作用</th><th>Java 类比</th></tr>
+<tr><td><code>Promise&lt;T&gt;</code></td><td>表示「未来某个时刻会有 T 类型的值」</td><td><code>CompletableFuture&lt;T&gt;</code></td></tr>
+<tr><td><code>async</code></td><td>声明函数返回 <code>Promise</code></td><td>方法返回 <code>CompletableFuture</code></td></tr>
+<tr><td><code>await</code></td><td>等待 Promise 解决（resolve），取出值</td><td><code>.join()</code> / <code>.get()</code></td></tr>
+</table>
+
+<p class="side">TS <code>await</code> 是<strong>语言级语法</strong>，不是方法调用。这意味着：<br>① 写法像同步代码，更易读<br>② 只能在 <code>async</code> 函数里用<br>③ TS 知道 await 后的值的类型，不用链式 <code>.then()</code> 推导</p>
+
+<h2>Demo：完整异步样板</h2>
+
+<p>复制到 <code>src/fetch-user.ts</code>：</p>
+<pre><code>// =============================================
+// 1. 基础 async / await
+// =============================================
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+async function fetchUser(id: number): Promise&lt;User&gt; {
+  const res = await fetch(`/api/users/${id}`);
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}`);
+  }
+  return res.json();   // 返回 User（TS 推）
+}
+
+// =============================================
+// 2. 并行请求（高频用法）
+// =============================================
+
+async function fetchUserAndPosts(userId: number) {
+  // 同时发起两个请求，等两个都完成
+  const [user, posts] = await Promise.all([
+    fetchUser(userId),
+    fetchPosts(userId),
+  ]);
+  return { user, posts };
+}
+
+// 不关心失败？用 allSettled
+const results = await Promise.allSettled([fetchUser(1), fetchUser(2)]);
+// results: PromiseSettledResult&lt;User&gt;[]
+
+// =============================================
+// 3. 错误处理（必会）
+// =============================================
+
+// 方式 A：try/catch
+async function safeGetUser(id: number): Promise&lt;User | null&gt; {
+  try {
+    return await fetchUser(id);
+  } catch (e) {
+    console.error("Failed to fetch user:", e);
+    return null;
+  }
+}
+
+// 方式 B：用 Result 类型（推荐 vibe coding）
+type Result&lt;T&gt; =
+  | { ok: true; value: T }
+  | { ok: false; error: Error };
+
+async function getUserResult(id: number): Promise&lt;Result&lt;User&gt;&gt; {
+  try {
+    const user = await fetchUser(id);
+    return { ok: true, value: user };
+  } catch (e) {
+    return { ok: false, error: e as Error };
+  }
+}
+
+// =============================================
+// 4. 串行 vs 并行（AI 常犯的错）
+// =============================================
+
+// ❌ 错：串行 await（慢 10 倍）
+async function slow(items: number[]) {
+  const results = [];
+  for (const id of items) {
+    results.push(await fetchUser(id));   // 每个 await 等前一个完成
+  }
+  return results;
+}
+
+// ✅ 对：并行
+async function fast(items: number[]) {
+  return Promise.all(items.map(id =&gt; fetchUser(id)));
+}</code></pre>
+
+<h2>读懂异步函数签名的 3 个关键</h2>
+
+<h3>① 返回类型标注</h3>
+<pre><code>// 看到 async 函数签名，先看返回类型
+async function fn(): Promise&lt;X&gt; { ... }
+//              ^^^^^^^^^^^^^^^
+//              → 调用方拿到的就是 Promise&lt;X&gt;
+
+async function fn2(): Promise&lt;void&gt; { ... }
+//              → 不关心返回值，只关心"完成"
+</code></pre>
+
+<h3>② 错误如何表达</h3>
+<pre><code>// TS 约定：async 函数抛错 = Promise reject
+// 调用方必须 await try/catch 或 .catch()
+
+async function risky(): Promise&lt;string&gt; {
+  throw new Error("boom");
+}
+
+const v = await risky();        // throw 同步冒泡
+risky().catch(e =&gt; console.log(e));   // 异步捕获</code></pre>
+
+<h3>③ <code>void</code> vs <code>Promise&lt;void&gt;</code></h3>
+<pre><code>// 这是 callback，调用方不等
+function cb(fn: () =&gt; void) {}
+
+// 这是 async，必须 await
+async function acb(fn: () =&gt; Promise&lt;void&gt;) { await fn(); }</code></pre>
+
+<h2>并发原语速查</h2>
+
+<table>
+<tr><th>API</th><th>行为</th><th>失败时</th></tr>
+<tr><td><code>Promise.all([...])</code></td><td>全成功才成功</td><td>任一失败立即 reject</td></tr>
+<tr><td><code>Promise.allSettled([...])</code></td><td>等全部</td><td>不失败，返回每项 status</td></tr>
+<tr><td><code>Promise.race([...])</code></td><td>第一个完成的胜出</td><td>胜出那个 reject 就失败</td></tr>
+<tr><td><code>Promise.any([...])</code></td><td>第一个成功的胜出</td><td>全失败才 reject (AggregateError)</td></tr>
+</table>
+
+<div class="vibe">
+<strong>vibe coding 实战</strong>：
+<ul>
+  <li><strong>写函数签名</strong>：标注 <code>Promise&lt;Result&lt;T&gt;&gt;</code> 而不是 <code>Promise&lt;T&gt;</code>，让 AI 写错误处理而非抛异常</li>
+  <li><strong>看 Next.js 服务端组件</strong>：<code>async function Page() { const data = await fetch(...); }</code> 是默认模式</li>
+  <li><strong>AI 写串行 await</strong> = 慢 10 倍。看到 <code>for...of + await</code> 立刻质疑能否改成 <code>Promise.all</code></li>
+  <li><strong>提示 AI 用 <code>Result&lt;T&gt;</code></strong>：错误不要 throw，让上层显式处理（vibe coding 友好）</li>
+</ul>
+</div>
+
+<h2>Quiz 自测（5 题）</h2>
+<ol>
+  <li>async 函数总是返回什么？<br>A. <code>T</code> &nbsp; B. <code>Promise&lt;T&gt;</code> &nbsp; C. <code>void</code></li>
+  <li><code>await</code> 能在普通函数里用吗？<br>A. 能 &nbsp; B. 不能（除非函数是 async）</li>
+  <li><code>Promise.all([a, b, c])</code> 任一 reject 时？<br>A. 等全部 &nbsp; B. 整体 reject &nbsp; C. 跳过失败的</li>
+  <li><code>for (const id of ids) { await fetchUser(id); }</code> 是？<br>A. 并行 &nbsp; B. 串行（慢）</li>
+  <li>vibe coding 想让 AI 写错误处理好的代码，签名应标注？<br>A. <code>Promise&lt;T&gt;</code> &nbsp; B. <code>Promise&lt;Result&lt;T&gt;&gt;</code> &nbsp; C. <code>T</code></li>
+</ol>
+<details><summary>答案</summary>
+<p>1. B · 2. B · 3. B · 4. B · 5. B</p>
+</details>
+
+<div class="win">
+<strong>🏁 你完成了</strong>
+<ul>
+  <li>理解 <code>async</code> / <code>Promise&lt;T&gt;</code> / <code>await</code> 三件套</li>
+  <li>会用 try/catch 或 <code>Result&lt;T&gt;</code> 处理错误</li>
+  <li>识别串行/并行，能优化 AI 写的慢代码</li>
+  <li>能读懂 Next.js 服务端组件、API 路由的异步代码</li>
+</ul>
+</div>
+
+<div class="next-lessons">
+<ul>
+  <li>📘 配套速查表：<a href="../reference/0001-typescript-for-java-devs.html">TS for Java Devs §8 Promise vs Future</a></li>
+  <li>🔜 <strong>Lesson 0007</strong>：<a href="./0007-module-system-and-tsconfig.html">模块系统 + tsconfig — 读懂 Next.js 项目结构</a></li>
+  <li>🎯 <a href="../MISSION.md">MISSION</a> · <a href="../CURRICULUM.md">CURRICULUM</a></li>
+</ul>
+</div>
+
+</body>
+</html>

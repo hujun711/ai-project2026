@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Lesson 0003 — Interface & Type Alias</title>
+<style>
+:root { --bg:#fbf8f3; --text:#1a1a2e; --accent:#9c2c2c; --muted:#6b6457; --code-bg:#f4f0e8; --border:#d4cfc4; --vibe:#2c5c2c; --vibe-bg:#e8e8d8; --step:#2c4c9c; }
+* { box-sizing: border-box; }
+body { background:var(--bg); color:var(--text); font-family:Georgia,"ETBook","Times New Roman",serif; max-width:760px; margin:2.5rem auto; padding:0 2rem; line-height:1.65; font-size:16px; }
+header { border-bottom:1px solid var(--border); padding-bottom:1.2em; margin-bottom:1.5em; }
+h1 { font-family:"Helvetica Neue",Arial,sans-serif; font-size:2em; margin:0 0 0.2em 0; letter-spacing:-0.01em; }
+h1 .badge { display:inline-block; font-size:0.4em; background:var(--accent); color:white; padding:0.2em 0.6em; border-radius:3px; vertical-align:middle; margin-right:0.5em; letter-spacing:0.05em; font-weight:600; }
+h1 .sub { display:block; font-size:0.55em; font-weight:400; color:var(--muted); margin-top:0.3em; }
+h2 { font-family:"Helvetica Neue",Arial,sans-serif; font-size:1.35em; margin:2em 0 0.5em 0; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:0.2em; }
+code { font-family:Menlo,Consolas,"Courier New",monospace; background:var(--code-bg); padding:0.1em 0.35em; border-radius:2px; font-size:0.88em; color:#5a2c2c; }
+pre { background:var(--code-bg); padding:1em 1.2em; border-left:3px solid var(--accent); overflow-x:auto; font-size:0.88em; line-height:1.55; border-radius:0 3px 3px 0; margin:0.6em 0; }
+pre code { background:none; padding:0; color:var(--text); }
+.side { float:right; clear:right; margin-right:-36%; width:30%; font-size:0.85em; color:var(--muted); background:#f0ebe1; padding:0.6em 0.9em; border-left:2px solid var(--border); margin-top:0.4em; line-height:1.5; }
+.step { background:white; border:1px solid var(--border); border-radius:4px; padding:1em 1.2em; margin:1.2em 0; position:relative; }
+.step::before { content:attr(data-n); position:absolute; top:-0.7em; left:0.6em; background:var(--step); color:white; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; font-size:0.8em; padding:0.2em 0.7em; border-radius:3px; letter-spacing:0.05em; }
+.step h3 { font-family:"Helvetica Neue",Arial,sans-serif; margin:0 0 0.6em 0; color:var(--text); font-size:1.1em; }
+.vibe { background:var(--vibe-bg); border-left:3px solid var(--vibe); padding:0.7em 1em; margin:1.2em 0; font-size:0.92em; border-radius:0 3px 3px 0; }
+.vibe::before { content:"💡 Vibe coding 视角"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--vibe); display:block; margin-bottom:0.3em; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; }
+.win { background:#e8f0e8; border:1px solid var(--vibe); border-radius:4px; padding:1em 1.2em; margin:2em 0; }
+.win::before { content:"🏁 你刚完成了什么"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--vibe); display:block; margin-bottom:0.5em; font-size:0.85em; letter-spacing:0.05em; text-transform:uppercase; }
+table { width:100%; border-collapse:collapse; margin:1em 0; font-size:0.92em; }
+th, td { border-bottom:1px solid var(--border); padding:0.5em 0.7em; text-align:left; vertical-align:top; }
+th { background:var(--code-bg); font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; color:var(--muted); }
+a { color:var(--accent); text-decoration:none; border-bottom:1px dotted var(--accent); }
+.next-lessons { background:var(--code-bg); border-radius:4px; padding:1em 1.2em; margin:2em 0; font-size:0.95em; }
+.next-lessons::before { content:"📚 配套 & 下一步"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--muted); display:block; margin-bottom:0.5em; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; }
+ul, ol { margin:0.5em 0; padding-left:1.4em; }
+li { margin:0.2em 0; }
+.meta { color:var(--muted); font-size:0.9em; margin-top:0.5em; }
+@media print { body { background:white; max-width:100%; font-size:11pt; padding:0 0.5in; } .step, .vibe, .win, .next-lessons { break-inside:avoid; } h2 { page-break-after:avoid; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="badge">LESSON 0003</span>Interface & Type Alias<span class="sub">25 分钟 · 学会区分「用什么」</span></h1>
+  <p class="meta">对齐 <a href="../MISSION.md">MISSION</a> · <a href="../CURRICULUM.md">CURRICULUM</a> · 前置：<a href="./0002-type-inference-and-annotation.html">L0002</a> · 后续：<a href="./0004-generics-and-utility-types.html">L0004</a></p>
+</header>
+
+<p>TS 有两个「定义类型」的关键字：<code>interface</code> 和 <code>type</code>。90% 场景可以互换，但社区有<strong>明确惯例</strong>。读 AI 代码、看库的类型声明，第一眼要分清这俩。</p>
+
+<h2>什么时候用哪个 — 一张表搞定</h2>
+
+<table>
+<tr><th>场景</th><th>用</th><th>原因</th></tr>
+<tr><td>对象/类的契约</td><td><strong><code>interface</code></strong></td><td>可 <code>extends</code>、可 <code>implements</code>、可声明合并</td></tr>
+<tr><td>联合类型（<code>|</code>）</td><td><strong><code>type</code></strong></td><td>interface 不支持 <code>|</code></td></tr>
+<tr><td>交叉类型（<code>&amp;</code>）</td><td><strong><code>type</code></strong></td><td>interface 不支持 <code>&amp;</code></td></tr>
+<tr><td>工具类型派生（<code>Pick&lt;&gt;</code>）</td><td><strong><code>type</code></strong></td><td>interface 不能 <code>=</code> 一个表达式</td></tr>
+<tr><td>函数类型</td><td>两者皆可</td><td>社区偏向 <code>type</code>（更简洁）</td></tr>
+<tr><td>原始类型别名（<code>type ID = string</code>）</td><td><strong><code>type</code></strong></td><td>interface 不能给原始类型起别名</td></tr>
+</table>
+
+<p class="side">Java 类比：<br><code>interface User { ... }</code> ≈ <code>public interface User { ... }</code> — 都是"对象契约"。<br>Java 没有的：<code>type Status = 'a' | 'b' | 'c'</code> ≈ sealed interface + 三个子类，更轻量。</p>
+
+<h2>Demo：完整对象契约样板</h2>
+
+<p>复制到 <code>src/user.ts</code>：</p>
+<pre><code>// =============================================
+// 对象契约 → interface
+// =============================================
+interface User {
+  id: number;
+  name: string;
+  email?: string;            // 可选字段
+  readonly createdAt: Date;  // 只读
+}
+
+// 继承（extends = Java 的 extends）
+interface Admin extends User {
+  permissions: string[];
+}
+
+// =============================================
+// 命名类型/联合 → type
+// =============================================
+type Status = 'pending' | 'active' | 'banned';
+type ID = string | number;
+type UserWithStatus = User & { status: Status };
+
+// =============================================
+// 工具类型派生 → 必须用 type
+// =============================================
+type UserInput = Omit&lt;User, 'id' | 'createdAt'&gt;;
+type UserPatch = Partial&lt;User&gt;;</code></pre>
+
+<h2>interface 的两个独有特性</h2>
+
+<h3>① 声明合并（declaration merging）</h3>
+<pre><code>// 同 interface 多次声明会自动合并
+interface User { id: number; name: string; }
+interface User { email?: string; }
+
+// 等价于：
+// interface User {
+//   id: number;
+//   name: string;
+//   email?: string;
+// }
+
+// 用法：扩展第三方库的类型（很常见）
+interface Window { myCustomProp: string }</code></pre>
+
+<h3>② implements（class 实现）</h3>
+<pre><code>class UserService implements User {
+  constructor(
+    public id: number,
+    public name: string,
+    public createdAt: Date
+  ) {}
+
+  // email 可选，不需要实现
+}</code></pre>
+
+<h2>type 能做但 interface 不能的 3 件事</h2>
+
+<h3>① 联合 / 交叉</h3>
+<pre><code>type StringOrNumber = string | number;
+type Combined = { a: string } &amp; { b: number };
+// Combined = { a: string; b: number }</code></pre>
+
+<h3>② 条件类型 / 模板字面量</h3>
+<pre><code>type IsString&lt;T&gt; = T extends string ? true : false;
+type Greet&lt;Name extends string&gt; = `hello, ${Name}`;
+// Greet&lt;"world"&gt; = "hello, world"</code></pre>
+
+<h3>③ 工具类型派生</h3>
+<pre><code>type UserKeys = keyof User;       // "id" | "name" | "email" | "createdAt"
+type UserValues = User[keyof User]; // number | string | Date | undefined</code></pre>
+
+<div class="vibe">
+<strong>vibe coding 实战</strong>：
+<ul>
+  <li><strong>写函数签名</strong> → 先写 <code>interface</code> 表达「我要的对象形状」</li>
+  <li><strong>写状态机</strong> → 用 <code>type Status = 'pending' | ...</code> 让 AI 写出穷尽的 switch</li>
+  <li><strong>扩展 AI 给的 interface</strong> → 用 <code>interface X extends Y</code>，比 <code>type X = Y &amp; {...}</code> 更直观</li>
+</ul>
+读 Next.js 代码时，看到 <code>interface Props</code> 就是组件 prop 契约；看到 <code>type</code> 多半是联合或工具派生。
+</div>
+
+<h2>Quiz 自测（5 题）</h2>
+<ol>
+  <li>对象契约推荐用？<br>A. <code>interface</code> &nbsp; B. <code>type</code> &nbsp; C. 两者都行 &nbsp; D. 随便</li>
+  <li>联合类型能用 <code>interface</code> 写吗？<br>A. 能 &nbsp; B. 不能 &nbsp; C. 看情况</li>
+  <li><code>type UserInput = Omit&lt;User, 'id'&gt;</code> 这个派生写法用 <code>type</code> 还是 <code>interface</code>？<br>A. interface &nbsp; B. type</li>
+  <li>interface 的独有特性是？<br>A. 联合类型 &nbsp; B. 声明合并 + implements &nbsp; C. 模板字面量</li>
+  <li>vibe coding 时，给 AI 一个对象契约，先写？<br>A. interface &nbsp; B. type &nbsp; C. class</li>
+</ol>
+<details><summary>答案</summary>
+<p>1. A · 2. B · 3. B · 4. B · 5. A</p>
+</details>
+
+<div class="win">
+<strong>🏁 你完成了</strong>
+<ul>
+  <li>能用 interface / type 各得其所</li>
+  <li>知道声明合并、implements 这俩 interface 独有</li>
+  <li>读 Next.js / tRPC 代码一眼分清契约 vs 派生</li>
+</ul>
+</div>
+
+<div class="next-lessons">
+<ul>
+  <li>📘 配套速查表：<a href="../reference/0001-typescript-for-java-devs.html">TS for Java Devs §3 interface vs type</a></li>
+  <li>🔜 <strong>Lesson 0004</strong>：<a href="./0004-generics-and-utility-types.html">泛型与工具类型 — 读懂库的类型签名</a></li>
+  <li>🎯 <a href="../MISSION.md">MISSION</a> · <a href="../CURRICULUM.md">CURRICULUM</a></li>
+</ul>
+</div>
+
+</body>
+</html>

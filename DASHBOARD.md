@@ -70,6 +70,7 @@ graph-excluded: true
 | 2026-09-06 | 建 TS Mission / Curriculum / 8 课 HTML + DASHBOARD + skills | 15 |
 | 2026-09-06 | 改造懒人包 #07 → kaigong + shougong 两个 skill | 3 |
 | 2026-09-06 | 首次跑 /收工：commit + push skills + DASHBOARD + .gitignore + CLAUDE.md | 5 |
+| 2026-09-06 | 补 commit：TS Mission / Curriculum / 8 课 / learning-records / reference | 6 |
 
 ## 🕳️ 踩坑笔记
 

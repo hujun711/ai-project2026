@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>TypeScript 速查表 — 写给 Java 后端</title>
+<style>
+:root {
+  --bg: #fbf8f3;
+  --text: #1a1a2e;
+  --accent: #9c2c2c;
+  --muted: #6b6457;
+  --code-bg: #f4f0e8;
+  --border: #d4cfc4;
+  --vibe: #2c5c2c;
+  --vibe-bg: #e8e8d8;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Georgia, "ETBook", "Times New Roman", serif;
+  max-width: 920px;
+  margin: 2.5rem auto;
+  padding: 0 2rem;
+  line-height: 1.65;
+  font-size: 16px;
+}
+header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1.5em;
+  margin-bottom: 2em;
+}
+h1 {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 2.4em;
+  margin: 0 0 0.2em 0;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+h1 .sub {
+  display: block;
+  font-size: 0.45em;
+  font-weight: 400;
+  color: var(--muted);
+  margin-top: 0.3em;
+  letter-spacing: 0;
+}
+h2 {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 1.5em;
+  margin: 2.2em 0 0.6em 0;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.2em;
+  letter-spacing: -0.01em;
+}
+h3 {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 1.15em;
+  margin: 1.6em 0 0.4em 0;
+  color: var(--text);
+}
+code {
+  font-family: Menlo, Consolas, "Courier New", monospace;
+  background: var(--code-bg);
+  padding: 0.1em 0.35em;
+  border-radius: 2px;
+  font-size: 0.88em;
+  color: #5a2c2c;
+}
+pre {
+  background: var(--code-bg);
+  padding: 1em 1.2em;
+  border-left: 3px solid var(--accent);
+  overflow-x: auto;
+  font-size: 0.88em;
+  line-height: 1.55;
+  border-radius: 0 3px 3px 0;
+  margin: 0.8em 0;
+}
+pre code { background: none; padding: 0; color: var(--text); }
+.side {
+  float: right;
+  clear: right;
+  margin-right: -36%;
+  width: 30%;
+  font-size: 0.85em;
+  color: var(--muted);
+  background: #f0ebe1;
+  padding: 0.6em 0.9em;
+  border-left: 2px solid var(--border);
+  margin-top: 0.4em;
+  line-height: 1.5;
+}
+.java-ts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+  margin: 1em 0;
+  font-size: 0.92em;
+}
+.java-ts > div {
+  background: var(--code-bg);
+  padding: 0.7em 1em;
+  border-radius: 3px;
+}
+.java-ts .label {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.72em;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+.vibe {
+  background: var(--vibe-bg);
+  border-left: 3px solid var(--vibe);
+  padding: 0.7em 1em 0.7em 1em;
+  margin: 1.2em 0;
+  font-size: 0.92em;
+  border-radius: 0 3px 3px 0;
+}
+.vibe::before {
+  content: "💡 Vibe coding 杠杆点";
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-weight: 700;
+  color: var(--vibe);
+  display: block;
+  margin-bottom: 0.4em;
+  font-size: 0.82em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.warn {
+  background: #f5e8d8;
+  border-left: 3px solid #c08020;
+  padding: 0.6em 1em;
+  margin: 1em 0;
+  font-size: 0.9em;
+  border-radius: 0 3px 3px 0;
+}
+.warn::before {
+  content: "⚠ Java 思维陷阱";
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-weight: 700;
+  color: #c08020;
+  display: block;
+  margin-bottom: 0.3em;
+  font-size: 0.82em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+  font-size: 0.92em;
+}
+th, td {
+  border-bottom: 1px solid var(--border);
+  padding: 0.5em 0.7em;
+  text-align: left;
+  vertical-align: top;
+}
+th {
+  background: var(--code-bg);
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.85em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+ul, ol { margin: 0.6em 0; padding-left: 1.4em; }
+li { margin: 0.2em 0; }
+a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); }
+a:hover { background: #f0e8e0; }
+svg { display: block; margin: 1.5em auto; max-width: 100%; }
+@media print {
+  body { background: white; max-width: 100%; font-size: 11pt; padding: 0 0.5in; }
+  pre, .vibe, .java-ts > div, .warn { break-inside: avoid; }
+  .no-print { display: none; }
+  h2 { page-break-after: avoid; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>TypeScript 速查表<span class="sub">写给 Java 后端工程师 — 2026-09-06</span></h1>
+  <p style="color: var(--muted); font-size: 0.95em;">
+    Mission: <a href="../MISSION.md">TypeScript 入门 → 全栈 → vibe coding</a> ·
+    配套 lesson: <a href="../lessons/0001-typescript-first-function.html">你的第一个 typed function</a>
+  </p>
+</header>
+
+<h2>TL;DR — 30 秒读懂 TS 对 Java 的关系</h2>
+<p>TypeScript = JavaScript 的静态类型层。它<strong>不是</strong>新语言、<strong>不是</strong>新运行时 — 编译后变成普通 JS，<code>node</code> 跑的是 JS。TS 给 JS 加了 Java/C# 风格的：静态类型、接口、泛型、枚举、装饰器。</p>
+<p>你的 Java 经验 <strong>90% 可平移</strong>。TS 独有的东西（联合类型、结构化类型、类型推导、模板字面量类型）才是真正的学习对象。</p>
+
+<h2>1. 安装与运行</h2>
+
+<h3>两条路</h3>
+<div class="java-ts">
+<div>
+<div class="label">编译型（推荐先学）</div>
+<pre><code>npm install -g typescript   # 装 tsc
+tsc hello.ts               # 编译 → hello.js
+node hello.js              # 跑 JS</code></pre>
+</div>
+<div>
+<div class="label">直接运行（开发常用）</div>
+<pre><code>npm install -g tsx         # 装 tsx
+tsx hello.ts               # 编译 + 跑，一次完成</code></pre>
+</div>
+</div>
+
+<p class="side">Java 类比：<code>tsc</code> ≈ <code>javac</code>；<code>tsx</code> ≈ <code>java</code>（直接运行字节码的运行时）。Node 跑 TS 必须先转 JS，就像 JVM 跑 .class。</p>
+
+<h3>tsconfig.json（最小可用）</h3>
+<pre><code>{
+  "compilerOptions": {
+    "target": "ES2022",
+    "strict": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*"]
+}</code></pre>
+<p>重点：<code>strict: true</code> 必开（相当于 Java 编译器的 <code>-Xlint:all</code>）。</p>
+
+<h2>2. 类型基础 — 与 Java 一一对应</h2>
+
+<table>
+<tr><th>Java</th><th>TypeScript</th><th>说明</th></tr>
+<tr><td><code>String name</code></td><td><code>string name</code></td><td>小写！TS 类型全小写</td></tr>
+<tr><td><code>int age = 30</code></td><td><code>let age = 30</code></td><td>类型可推导，常省略</td></tr>
+<tr><td><code>final int MAX = 100</code></td><td><code>const MAX = 100</code></td><td><code>const</code> 表示不可变绑定</td></tr>
+<tr><td><code>String[] names</code></td><td><code>string[] names</code> 或 <code>Array&lt;string&gt;</code></td><td>两种写法等价</td></tr>
+<tr><td><code>List&lt;String&gt;</code></td><td><code>Array&lt;string&gt;</code></td><td>TS 没有 List/Set/Map 分家，统一 <code>Array</code></td></tr>
+<tr><td><code>Map&lt;String, Integer&gt;</code></td><td><code>Map&lt;string, number&gt;</code> 或 <code>Record&lt;string, number&gt;</code></td><td>两个选择</td></tr>
+<tr><td><code>void</code></td><td><code>void</code> / <code>undefined</code></td><td>函数无返回值</td></tr>
+<tr><td><code>null</code></td><td><code>null</code></td><td>显式可空：<code>string \| null</code></td></tr>
+</table>
+
+<div class="warn">Java 思维陷阱：<code>String</code> 和 <code>string</code> 在 TS 里<strong>不是一回事</strong>。<code>String</code> 是包装类（极少用），<code>string</code> 才是原始类型。IDE 会提示，但你容易习惯性打大写。</div>
+
+<h2>3. <code>interface</code> vs <code>type</code> — 什么时候用哪个</h2>
+
+<div class="java-ts">
+<div>
+<div class="label">Java</div>
+<pre><code>public interface User {
+  Long getId();
+  String getName();
+  int getAge();
+}
+
+public record Admin(
+  Long id, String name,
+  int age, String[] roles
+) implements User {}</code></pre>
+</div>
+<div>
+<div class="label">TypeScript</div>
+<pre><code>interface User {
+  id: number;
+  name: string;
+  age: number;
+}
+
+// 同义两种写法
+type Admin = {
+  id: number;
+  name: string;
+  age: number;
+  roles: string[];
+};
+
+const admin: Admin = {
+  id: 1, name: "x",
+  age: 30, roles: ["a","b"]
+};</code></pre>
+</div>
+</div>
+
+<p><strong>约定</strong>：对象结构用 <code>interface</code>（可扩展、可 <code>implements</code>），联合/工具/复杂类型用 <code>type</code>。</p>
+
+<div class="vibe">vibe coding 时，<strong>先写 interface 再写实现</strong>。把 interface 写在文件顶部，让 AI 看到契约再生成函数体，错误率掉一半。这是 TS 给你最大的杠杆。</div>
+
+<h2>4. 泛型 — 几乎和 Java 一样</h2>
+
+<div class="java-ts">
+<div>
+<div class="label">Java</div>
+<pre><code>public &lt;T&gt; T first(List&lt;T&gt; list) {
+  return list.get(0);
+}
+
+public &lt;T extends Comparable&lt;T&gt;&gt;
+    T max(T a, T b) {
+  return a.compareTo(b) &gt; 0
+    ? a : b;
+}</code></pre>
+</div>
+<div>
+<div class="label">TypeScript</div>
+<pre><code>function first&lt;T&gt;(list: T[]): T {
+  return list[0];
+}
+
+function max&lt;T extends
+  Comparable&lt;T&gt;&gt;(a: T, b: T): T {
+  return a.compareTo(b) &gt; 0
+    ? a : b;
+}</code></pre>
+</div>
+</div>
+
+<div class="warn">两个关键差异：① TS 泛型<strong>不擦除</strong>，运行时仍可用（<code>typeof</code> 读得到）；② TS 没有 <code>? extends</code> 通配符，用 <code>T extends unknown[]</code> 等条件类型替代。</div>
+
+<h2>5. 联合类型与 narrowing — TS 独有，Java 没有</h2>
+
+<p>这是 TS <strong>真正比 Java 强的地方</strong>。一个变量可以是多个类型之一：</p>
+<pre><code>type Shape =
+  | { kind: "circle"; radius: number }
+  | { kind: "square"; side: number }
+  | { kind: "rectangle"; w: number; h: number };
+
+function area(s: Shape): number {
+  // narrow: TS 看到 kind 字段自动缩小类型
+  switch (s.kind) {
+    case "circle":    return Math.PI * s.radius ** 2;
+    case "square":    return s.side ** 2;
+    case "rectangle": return s.w * s.h;
+  }
+  // 这里 s 是 never，TS 编译期保证穷尽
+}</code></pre>
+
+<p class="side">Java 等价物是 <code>sealed interface + switch pattern matching</code>（Java 21 才有）。TS 早就有了，且零运行时开销。</p>
+
+<h2>6. 类型守卫（narrowing 的工具）</h2>
+
+<pre><code>function process(v: string | number | null) {
+  // typeof 守卫
+  if (typeof v === "string") return v.toUpperCase();
+
+  // instanceof 守卫
+  if (v instanceof Date) return v.toISOString();
+
+  // in 守卫（结构化类型特有）
+  if (v &amp;&amp; "id" in v) return v.id;
+
+  // 自定义类型谓词
+  if (isUser(v)) return v.name;
+}
+
+function isUser(x: any): x is User {
+  return x &amp;&amp; typeof x.id === "number";
+}</code></pre>
+
+<h2>7. <code>any</code> vs <code>unknown</code> vs <code>never</code></h2>
+
+<table>
+<tr><th>类型</th><th>能赋值给其他？</th><th>能使用前需要？</th><th>Java 类比</th></tr>
+<tr><td><code>any</code></td><td>✅ 万能</td><td>❌ 直接用</td><td><code>Object</code> 上界 + 关掉所有检查</td></tr>
+<tr><td><code>unknown</code></td><td>❌ 必须先 narrow</td><td>✅ narrow 后</td><td>类型安全的 <code>Object</code>，但要先 instanceof/typeof</td></tr>
+<tr><td><code>never</code></td><td>✅ 任何类型</td><td>不可能使用</td><td>无返回值的 <code>void</code>、抛异常的函数</td></tr>
+</table>
+
+<div class="warn">Java 思维陷阱：Java 里能往 <code>Object</code> 塞任何东西然后强转，TS 里 <code>unknown</code> 才是这个模式，<code>any</code> 是关闭类型检查（逃课按钮）。优先 <code>unknown</code>。</div>
+
+<h2>8. Promise vs Future — 异步几乎一样</h2>
+
+<div class="java-ts">
+<div>
+<div class="label">Java</div>
+<pre><code>CompletableFuture&lt;String&gt; fetch()
+  = CompletableFuture
+      .supplyAsync(() -&gt; http());
+
+String data = fetch()
+  .thenApply(String::toUpperCase)
+  .join();</code></pre>
+</div>
+<div>
+<div class="label">TypeScript</div>
+<pre><code>async function fetch(): Promise&lt;string&gt; {
+  return await http();
+}
+
+const data = await fetch()
+  .then(s =&gt; s.toUpperCase());</code></pre>
+</div>
+</div>
+
+<p>差别：TS 的 <code>await</code> 是语言级语法（比 Java 链式调用简洁 10 倍），但底层仍是事件循环 + 单线程。高 CPU 计算仍是 Node 痛点。</p>
+
+<h2>9. 模块系统 — CommonJS vs ESM</h2>
+
+<pre><code>// 旧 Node（CommonJS）
+import x = require("./x");
+
+// 现代（ES Module）— 推荐
+import { foo, bar } from "./x";
+import * as X from "./x";
+import type { Foo } from "./x";   // 仅类型，运行时擦除
+
+export function foo() {}
+export default class Bar {}</code></pre>
+
+<p class="side">vs Java：Java 的 <code>import</code> 只导入类型，运行时靠 classpath；TS 的 <code>import</code> 同时导入类型和值（除非用 <code>import type</code>）。这导致 TS 代码里循环依赖更危险。</p>
+
+<h2>10. 工具类型（TS 独有，AI 友好）</h2>
+
+<table>
+<tr><th>工具类型</th><th>作用</th><th>vibe coding 用法</th></tr>
+<tr><td><code>Partial&lt;T&gt;</code></td><td>所有字段变可选</td><td>更新对象（PATCH）</td></tr>
+<tr><td><code>Required&lt;T&gt;</code></td><td>所有字段变必填</td><td>补全缺字段</td></tr>
+<tr><td><code>Pick&lt;T, K&gt;</code></td><td>挑出指定字段</td><td>列表项只展示部分字段</td></tr>
+<tr><td><code>Omit&lt;T, K&gt;</code></td><td>删掉指定字段</td><td>创建对象时去除敏感字段</td></tr>
+<tr><td><code>Record&lt;K, V&gt;</code></td><td>键值对类型</td><td>字典、配置对象</td></tr>
+<tr><td><code>ReturnType&lt;T&gt;</code></td><td>取函数返回类型</td><td>派生类型不重写</td></tr>
+<tr><td><code>Readonly&lt;T&gt;</code></td><td>所有字段只读</td><td>不可变数据</td></tr>
+</table>
+
+<div class="vibe">让 Claude Code 生成代码时，如果你给 <code>type UserInput = Omit&lt;User, "id" | "createdAt"&gt;</code> 这种派生类型，AI 会<strong>自动复用</strong>而不会重新定义。少写 30% 代码。</div>
+
+<h2>11. <code>as const</code> 与字面量类型 — 类型体操的入口</h2>
+
+<pre><code>// 不加 as const：推断为 string[]
+const routes = ["/", "/about", "/contact"];
+
+// 加 as const：变成 readonly 字面量元组
+const routes = ["/", "/about", "/contact"] as const;
+// 类型：readonly ["/", "/about", "/contact"]
+
+type Route = typeof routes[number];
+// 类型："/" | "/about" | "/contact"</code></pre>
+
+<p class="side">Java 完全无对应。这是 TS 类型体操的入口，配合 <code>typeof</code>、<code>keyof</code>、<code>infer</code> 能写出惊人强大的类型。</p>
+
+<h2>12. Vibe coding 实战 — 用 TS interface 当「AI 脚手架」</h2>
+
+<p>这是你最该养成的习惯。在让 AI 生成函数体前，<strong>先手写接口</strong>：</p>
+<pre><code>// 1. 手写接口（你的意图）
+interface CreateOrderInput {
+  userId: number;
+  items: { sku: string; qty: number }[];
+  couponCode?: string;
+}
+
+interface OrderResult {
+  orderId: string;
+  total: number;
+  createdAt: Date;
+}
+
+// 2. 让 AI 生成函数体
+async function createOrder(
+  input: CreateOrderInput
+): Promise&lt;OrderResult&gt; { /* ... */ }</code></pre>
+
+<p>AI 看到契约后，<strong>几乎不会返回错误类型</strong>。这是 TS 在 vibe coding 时代最大的杠杆 — 类型就是给 LLM 的精确 prompt。</p>
+
+<h2>13. TS 编译流程（手绘）</h2>
+<svg width="700" height="120" viewBox="0 0 700 120" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .box { fill: var(--code-bg); stroke: var(--accent); stroke-width: 1.5; }
+    .arr { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+    .lbl { font: 13px "Helvetica Neue", Arial, sans-serif; fill: var(--text); text-anchor: middle; }
+    .sub { font: 11px Georgia, serif; fill: var(--muted); text-anchor: middle; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+    </marker>
+  </defs>
+  <rect class="box" x="10" y="30" width="130" height="60" rx="4"/>
+  <text class="lbl" x="75" y="58">hello.ts</text>
+  <text class="sub" x="75" y="76">TypeScript 源码</text>
+
+  <rect class="box" x="200" y="30" width="130" height="60" rx="4"/>
+  <text class="lbl" x="265" y="58">hello.js</text>
+  <text class="sub" x="265" y="76">普通 JS（类型擦除）</text>
+
+  <rect class="box" x="390" y="30" width="130" height="60" rx="4"/>
+  <text class="lbl" x="455" y="58">Node / Bun</text>
+  <text class="sub" x="455" y="76">运行时</text>
+
+  <rect class="box" x="580" y="30" width="110" height="60" rx="4"/>
+  <text class="lbl" x="635" y="58">输出</text>
+  <text class="sub" x="635" y="76">stdout / HTTP</text>
+
+  <path class="arr" d="M140 60 L195 60"/>
+  <text class="sub" x="167" y="50">tsc / tsx</text>
+
+  <path class="arr" d="M330 60 L385 60"/>
+  <text class="sub" x="357" y="50">node</text>
+
+  <path class="arr" d="M520 60 L575 60"/>
+  <text class="sub" x="547" y="50">运行</text>
+
+  <text class="sub" x="350" y="110" style="font-style: italic;">关键：TS 只活在编译期，运行时是纯 JS</text>
+</svg>
+
+<h2>14. 端到端类型贯通 — vibe coding 的「作弊码」</h2>
+<svg width="740" height="180" viewBox="0 0 740 180" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .tier { fill: var(--code-bg); stroke: var(--accent); stroke-width: 1.5; }
+    .arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#arr2); }
+    .name { font: 13px "Helvetica Neue", Arial, sans-serif; fill: var(--text); text-anchor: middle; font-weight: 600; }
+    .desc { font: 11px Georgia, serif; fill: var(--muted); text-anchor: middle; }
+    .src { font: 10px Menlo, monospace; fill: var(--muted); text-anchor: middle; }
+  </style>
+  <defs>
+    <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+    </marker>
+  </defs>
+
+  <rect class="tier" x="20"  y="30" width="140" height="60" rx="4"/>
+  <text class="name" x="90" y="55">Drizzle Schema</text>
+  <text class="desc" x="90" y="72">数据库表</text>
+  <text class="src" x="90" y="86">pgTable(...)</text>
+
+  <rect class="tier" x="200" y="30" width="140" height="60" rx="4"/>
+  <text class="name" x="270" y="55">Zod Schema</text>
+  <text class="desc" x="270" y="72">运行时校验</text>
+  <text class="src" x="270" y="86">z.object({...})</text>
+
+  <rect class="tier" x="380" y="30" width="140" height="60" rx="4"/>
+  <text class="name" x="450" y="55">tRPC Router</text>
+  <text class="desc" x="450" y="72">API 层</text>
+  <text class="src" x="450" y="86">router.query(...)</text>
+
+  <rect class="tier" x="560" y="30" width="160" height="60" rx="4"/>
+  <text class="name" x="640" y="55">React Hook</text>
+  <text class="desc" x="640" y="72">前端调用</text>
+  <text class="src" x="640" y="86">trpc.user.byId.useQuery</text>
+
+  <path class="arrow" d="M160 60 L195 60"/>
+  <path class="arrow" d="M340 60 L375 60"/>
+  <path class="arrow" d="M520 60 L555 60"/>
+
+  <text class="desc" x="450" y="115" style="font-style: italic;">一次定义，全栈自动同步</text>
+  <text class="desc" x="450" y="135" style="font-style: italic;">（这是 Java 多模块做不到的事）</text>
+  <text class="desc" x="450" y="160" style="font-weight: 600; fill: var(--accent);">→ AI 在每层看到的都是类型化契约</text>
+</svg>
+
+<h2>下一步</h2>
+<ul>
+  <li>📘 <a href="../lessons/0001-typescript-first-function.html">Lesson 0001：你的第一个 typed function</a>（5 分钟跑通）</li>
+  <li>📖 <a href="../RESOURCES.md">RESOURCES.md</a>（精选官方文档与中文资料）</li>
+  <li>🎯 <a href="../MISSION.md">MISSION.md</a>（12 周全栈路径）</li>
+</ul>
+
+<p style="color: var(--muted); font-size: 0.9em; margin-top: 3em; border-top: 1px solid var(--border); padding-top: 1em;">
+  本参考文档由 Claude Code 写于 2026-09-06 · 配套 LR-0001 · 反馈 / 修正请直接对话 Pi
+</p>
+
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Lesson 0008 — Vibe Coding 实战：读 AI 代码</title>
+<style>
+:root { --bg:#fbf8f3; --text:#1a1a2e; --accent:#9c2c2c; --muted:#6b6457; --code-bg:#f4f0e8; --border:#d4cfc4; --vibe:#2c5c2c; --vibe-bg:#e8e8d8; --step:#2c4c9c; --bad:#c03030; --bad-bg:#f5e0e0; }
+* { box-sizing: border-box; }
+body { background:var(--bg); color:var(--text); font-family:Georgia,"ETBook","Times New Roman",serif; max-width:760px; margin:2.5rem auto; padding:0 2rem; line-height:1.65; font-size:16px; }
+header { border-bottom:1px solid var(--border); padding-bottom:1.2em; margin-bottom:1.5em; }
+h1 { font-family:"Helvetica Neue",Arial,sans-serif; font-size:2em; margin:0 0 0.2em 0; letter-spacing:-0.01em; }
+h1 .badge { display:inline-block; font-size:0.4em; background:var(--accent); color:white; padding:0.2em 0.6em; border-radius:3px; vertical-align:middle; margin-right:0.5em; letter-spacing:0.05em; font-weight:600; }
+h1 .sub { display:block; font-size:0.55em; font-weight:400; color:var(--muted); margin-top:0.3em; }
+h2 { font-family:"Helvetica Neue",Arial,sans-serif; font-size:1.35em; margin:2em 0 0.5em 0; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:0.2em; }
+code { font-family:Menlo,Consolas,"Courier New",monospace; background:var(--code-bg); padding:0.1em 0.35em; border-radius:2px; font-size:0.88em; color:#5a2c2c; }
+pre { background:var(--code-bg); padding:1em 1.2em; border-left:3px solid var(--accent); overflow-x:auto; font-size:0.88em; line-height:1.55; border-radius:0 3px 3px 0; margin:0.6em 0; }
+pre code { background:none; padding:0; color:var(--text); }
+.side { float:right; clear:right; margin-right:-36%; width:30%; font-size:0.85em; color:var(--muted); background:#f0ebe1; padding:0.6em 0.9em; border-left:2px solid var(--border); margin-top:0.4em; line-height:1.5; }
+.step { background:white; border:1px solid var(--border); border-radius:4px; padding:1em 1.2em; margin:1.2em 0; position:relative; }
+.step::before { content:attr(data-n); position:absolute; top:-0.7em; left:0.6em; background:var(--step); color:white; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; font-size:0.8em; padding:0.2em 0.7em; border-radius:3px; letter-spacing:0.05em; }
+.step h3 { font-family:"Helvetica Neue",Arial,sans-serif; margin:0 0 0.6em 0; color:var(--text); font-size:1.1em; }
+.vibe { background:var(--vibe-bg); border-left:3px solid var(--vibe); padding:0.7em 1em; margin:1.2em 0; font-size:0.92em; border-radius:0 3px 3px 0; }
+.vibe::before { content:"💡 Vibe coding 视角"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--vibe); display:block; margin-bottom:0.3em; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; }
+.bad { background:var(--bad-bg); border-left:3px solid var(--bad); padding:0.7em 1em; margin:1em 0; font-size:0.9em; border-radius:0 3px 3px 0; }
+.bad::before { content:"🐛 AI 常见错误"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--bad); display:block; margin-bottom:0.3em; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; }
+.win { background:#e8f0e8; border:1px solid var(--vibe); border-radius:4px; padding:1em 1.2em; margin:2em 0; }
+.win::before { content:"🏁 你刚完成了什么"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--vibe); display:block; margin-bottom:0.5em; font-size:0.85em; letter-spacing:0.05em; text-transform:uppercase; }
+table { width:100%; border-collapse:collapse; margin:1em 0; font-size:0.92em; }
+th, td { border-bottom:1px solid var(--border); padding:0.5em 0.7em; text-align:left; vertical-align:top; }
+th { background:var(--code-bg); font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; color:var(--muted); }
+a { color:var(--accent); text-decoration:none; border-bottom:1px dotted var(--accent); }
+.next-lessons { background:var(--code-bg); border-radius:4px; padding:1em 1.2em; margin:2em 0; font-size:0.95em; }
+.next-lessons::before { content:"📚 配套 & 下一步"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--muted); display:block; margin-bottom:0.5em; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; }
+ul, ol { margin:0.5em 0; padding-left:1.4em; }
+li { margin:0.2em 0; }
+.meta { color:var(--muted); font-size:0.9em; margin-top:0.5em; }
+details { margin:0.8em 0; }
+summary { cursor:pointer; font-weight:600; color:var(--accent); padding:0.3em 0; }
+@media print { body { background:white; max-width:100%; font-size:11pt; padding:0 0.5in; } .step, .vibe, .win, .bad, .next-lessons { break-inside:avoid; } h2 { page-break-after:avoid; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="badge">LESSON 0008</span>Vibe Coding 实战：读 AI 代码<span class="sub">30 分钟 · 学会挑 AI 生成的毛病</span></h1>
+  <p class="meta">对齐 <a href="../MISSION.md">MISSION</a> · <a href="../CURRICULUM.md">CURRICULUM</a> · 前置：L0001-L0007 全部 · 后续：开始 <a href="../CURRICULUM.md">Week 3-4 Next.js</a></p>
+</header>
+
+<p>这是最后一节实战课。给你一段 AI 生成的 Next.js 风格代码，里面藏了 <strong>5 个常见错误</strong>。读完每一段先<strong>自己找</strong>，再对照答案。找 bug 的能力 = vibe coding 真正的护城河。</p>
+
+<h2>AI 写的代码（完整版）</h2>
+
+<p>假装这段是 Claude Code 给你的，需求是「写一个获取用户列表的 API 路由 + 前端组件」：</p>
+<pre><code>// =============================================
+// app/api/users/route.ts
+// =============================================
+import { db } from "@/lib/db";
+
+export async function GET(request) {
+  const users = await db.user.findMany();
+  return Response.json(users);
+}
+
+// =============================================
+// app/users/page.tsx
+// =============================================
+"use client";
+
+import { useState, useEffect } from "react";
+
+interface User {
+  id: number;
+  name: string;
+  email: any;
+}
+
+export default function UsersPage() {
+  const [users, setUsers] = useState([]);
+  const [error, setError] = useState();
+
+  useEffect(() =&gt; {
+    fetch("/api/users")
+      .then(res =&gt; res.json())
+      .then(data =&gt; setUsers(data));
+  }, []);
+
+  return (
+    &lt;div&gt;
+      {users.map(u =&gt; (
+        &lt;div key={u.id}&gt;
+          &lt;h3&gt;{u.name}&lt;/h3&gt;
+          &lt;p&gt;{u.email.toUpperCase()}&lt;/p&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+<h2>5 个 Bug — 先自己找</h2>
+
+<p>对照 L0001-L0007 的概念，逐行扫一遍。你能找出几个？</p>
+
+<details>
+<summary>🐛 Bug 1：API route 缺类型（对应 L0001）</summary>
+<p><strong>问题</strong>：<code>export async function GET(request)</code> 漏了 <code>request: Request</code> 类型，TS 会把 <code>request</code> 推成 <code>any</code>。</p>
+<p><strong>修法</strong>：</p>
+<pre><code>export async function GET(request: Request) { ... }</code></pre>
+<p><strong>vibe coding 教训</strong>：永远给函数参数加类型，AI 经常漏。</p>
+</details>
+
+<details>
+<summary>🐛 Bug 2：<code>email: any</code>（对应 L0004 + L0007）</summary>
+<p><strong>问题</strong>：<code>email</code> 应该是 <code>string</code> 或 <code>string | null</code>，<code>any</code> 关掉了类型检查，运行时 <code>u.email.toUpperCase()</code> 会因为 <code>email</code> 是 undefined 崩溃。</p>
+<p><strong>修法</strong>：</p>
+<pre><code>interface User {
+  id: number;
+  name: string;
+  email: string | null;   // 或 string，看 DB schema
+}</code></pre>
+</details>
+
+<details>
+<summary>🐛 Bug 3：<code>useState([])</code> 推导成 <code>never[]</code>（对应 L0002 + L0005）</summary>
+<p><strong>问题</strong>：<code>useState([])</code> 推导成 <code>never[]</code>（空数组字面量），后面 <code>users.map(u =&gt; ...)</code> 里 <code>u</code> 是 <code>never</code>，<code>u.name</code> 报错。</p>
+<p><strong>修法</strong>：</p>
+<pre><code>const [users, setUsers] = useState&lt;User[]&gt;([]);</code></pre>
+</details>
+
+<details>
+<summary>🐛 Bug 4：<code>useState()</code> 缺初值（对应 L0007 + strictNullChecks）</summary>
+<p><strong>问题</strong>：<code>useState()</code> 不传初值 = <code>undefined</code>。<code>strict: true</code> 下，<code>error</code> 类型是 <code>undefined</code>，后面 <code>setError(...)</code> 调用没问题，但读 <code>error</code> 会报错。</p>
+<p><strong>修法</strong>：</p>
+<pre><code>const [error, setError] = useState&lt;Error | null&gt;(null);</code></pre>
+</details>
+
+<details>
+<summary>🐛 Bug 5：fetch 无错误处理 + 无 await（对应 L0006 + L0005）</summary>
+<p><strong>问题</strong>：① <code>fetch</code> 失败时 <code>res.json()</code> 不被调用；② 没 <code>await</code>，TS 不报但写法不规；③ 错误被静默吃掉，UI 上看不到失败。</p>
+<p><strong>修法（用 Result 类型）</strong>：</p>
+<pre><code>useEffect(() =&gt; {
+  async function load() {
+    try {
+      const res = await fetch("/api/users");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data: User[] = await res.json();
+      setUsers(data);
+    } catch (e) {
+      setError(e as Error);
+    }
+  }
+  load();
+}, []);</code></pre>
+<p>更地道的写法：让 API 返回 <code>Result&lt;T&gt;</code>，前端按状态分支渲染（见 L0005）。</p>
+</details>
+
+<h2>修好后的完整版</h2>
+
+<pre><code>// =============================================
+// app/api/users/route.ts
+// =============================================
+import { db } from "@/lib/db";
+
+interface User {
+  id: number;
+  name: string;
+  email: string | null;
+}
+
+export async function GET(request: Request) {
+  const users: User[] = await db.user.findMany();
+  return Response.json(users);
+}
+
+// =============================================
+// app/users/page.tsx
+// =============================================
+"use client";
+
+import { useState, useEffect } from "react";
+
+interface User {
+  id: number;
+  name: string;
+  email: string | null;
+}
+
+type LoadState =
+  | { status: 'loading' }
+  | { status: 'success'; users: User[] }
+  | { status: 'error'; error: string };
+
+export default function UsersPage() {
+  const [state, setState] = useState&lt;LoadState&gt;({ status: 'loading' });
+
+  useEffect(() =&gt; {
+    async function load() {
+      try {
+        const res = await fetch("/api/users");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const users: User[] = await res.json();
+        setState({ status: 'success', users });
+      } catch (e) {
+        setState({ status: 'error', error: (e as Error).message });
+      }
+    }
+    load();
+  }, []);
+
+  if (state.status === 'loading') return &lt;p&gt;加载中...&lt;/p&gt;;
+  if (state.status === 'error') return &lt;p&gt;出错: {state.error}&lt;/p&gt;;
+  return (
+    &lt;div&gt;
+      {state.users.map(u =&gt; (
+        &lt;div key={u.id}&gt;
+          &lt;h3&gt;{u.name}&lt;/h3&gt;
+          &lt;p&gt;{u.email ?? '无邮箱'}&lt;/p&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+<h2>5 个 vibe coding 黄金规则（综合 L0001-L0007）</h2>
+
+<ol>
+  <li><strong>先写接口再让 AI 写实现</strong>（L0003）— 类型是给 LLM 的 prompt</li>
+  <li><strong>工具类型派生输入输出</strong>（L0004）— <code>Omit&lt;User, 'id'&gt;</code> 别让 AI 重抄字段</li>
+  <li><strong>异步用 <code>Result&lt;T&gt;</code> 表达错误</strong>（L0005 + L0006）— 不要 throw 让上层吞</li>
+  <li><strong>discriminated union 写状态机</strong>（L0005）— 加载/成功/失败/空都靠它</li>
+  <li><strong>永远检查 AI 的类型推导</strong>（L0002）— <code>useState([])</code> 变 <code>never[]</code> 是高频坑</li>
+</ol>
+
+<div class="vibe">
+<strong>实战检验</strong>：现在打开 Claude Code 或 Cursor，粘贴上面那段「修好后的完整版」代码，输入 prompt：<br>
+<br>
+<code>"请基于这段代码加一个新功能：搜索框，按 name 过滤用户列表。要求：(1) 用 TypeScript strict 模式；(2) 输入类型用 User 派生；(3) 过滤用 discriminated union 表达 loading/empty/hasResults 三个状态"</code><br>
+<br>
+观察 AI 输出：
+<ul>
+  <li>是否把搜索状态做成 union？</li>
+  <li>是否复用 <code>User</code> 类型？</li>
+  <li>是否处理了「输入为空」和「结果为空」的区分？</li>
+</ul>
+这些检查点都是 vibe coding 时代的「单元测试」。
+</div>
+
+<h2>Quiz 自测（5 题）</h2>
+<ol>
+  <li>AI 写 <code>async function GET(request)</code> 漏了什么？<br>A. <code>async</code> &nbsp; B. <code>request: Request</code> 类型标注 &nbsp; C. 错的是 await</li>
+  <li><code>useState([])</code> 的推导类型是？<br>A. <code>User[]</code> &nbsp; B. <code>never[]</code> &nbsp; C. <code>any[]</code></li>
+  <li><code>useState()</code> 不传初值的类型是？<br>A. <code>null</code> &nbsp; B. <code>undefined</code> &nbsp; C. <code>never</code></li>
+  <li>vibe coding 想让 AI 写状态机？<br>A. 写三个 useState &nbsp; B. 用 discriminated union &nbsp; C. 用 class</li>
+  <li>AI 写的 async 函数没错误处理，应该？<br>A. 直接用 &nbsp; B. 让 AI 加 try/catch 或改用 <code>Result&lt;T&gt;</code> &nbsp; C. 自己写一个 wrapper</li>
+</ol>
+<details><summary>答案</summary>
+<p>1. B · 2. B · 3. B · 4. B · 5. B</p>
+</details>
+
+<div class="win">
+<strong>🏁 你完成了 8 课全部 TS 入门</strong>
+<ul>
+  <li>能读懂 AI 生成代码里的类型错误（Bug 1-5）</li>
+  <li>会用 5 条黄金规则引导 AI 输出更好的代码</li>
+  <li>准备好进入 Week 3-4 Next.js 全栈开发</li>
+</ul>
+</div>
+
+<div class="next-lessons">
+<ul>
+  <li>📘 配套速查表：<a href="../reference/0001-typescript-for-java-devs.html">TS for Java Devs</a>（任何时候查阅）</li>
+  <li>🎯 <a href="../MISSION.md">MISSION</a> · <a href="../CURRICULUM.md">CURRICULUM</a> · <a href="../RESOURCES.md">RESOURCES</a></li>
+  <li>🔜 <strong>下一阶段</strong>：Week 3-4 Next.js + React 基础</li>
+</ul>
+
+<p style="margin-top: 2em; color: var(--muted); font-size: 0.92em; border-top: 1px solid var(--border); padding-top: 1em;">
+  💬 <strong>卡在哪一课？</strong>直接告诉我。我据此调整深度 + 写入 [[learning-records]]。<br>
+  💡 <strong>想加餐？</strong>：类型体操（<code>infer</code> / 条件类型）/ 装饰器 / Node.js 内置类型 — 后续课程再说。
+</p>
+
+</body>
+</html>

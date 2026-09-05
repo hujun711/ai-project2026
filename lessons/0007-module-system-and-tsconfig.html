@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Lesson 0007 — 模块系统 + tsconfig</title>
+<style>
+:root { --bg:#fbf8f3; --text:#1a1a2e; --accent:#9c2c2c; --muted:#6b6457; --code-bg:#f4f0e8; --border:#d4cfc4; --vibe:#2c5c2c; --vibe-bg:#e8e8d8; --step:#2c4c9c; }
+* { box-sizing: border-box; }
+body { background:var(--bg); color:var(--text); font-family:Georgia,"ETBook","Times New Roman",serif; max-width:760px; margin:2.5rem auto; padding:0 2rem; line-height:1.65; font-size:16px; }
+header { border-bottom:1px solid var(--border); padding-bottom:1.2em; margin-bottom:1.5em; }
+h1 { font-family:"Helvetica Neue",Arial,sans-serif; font-size:2em; margin:0 0 0.2em 0; letter-spacing:-0.01em; }
+h1 .badge { display:inline-block; font-size:0.4em; background:var(--accent); color:white; padding:0.2em 0.6em; border-radius:3px; vertical-align:middle; margin-right:0.5em; letter-spacing:0.05em; font-weight:600; }
+h1 .sub { display:block; font-size:0.55em; font-weight:400; color:var(--muted); margin-top:0.3em; }
+h2 { font-family:"Helvetica Neue",Arial,sans-serif; font-size:1.35em; margin:2em 0 0.5em 0; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:0.2em; }
+code { font-family:Menlo,Consolas,"Courier New",monospace; background:var(--code-bg); padding:0.1em 0.35em; border-radius:2px; font-size:0.88em; color:#5a2c2c; }
+pre { background:var(--code-bg); padding:1em 1.2em; border-left:3px solid var(--accent); overflow-x:auto; font-size:0.88em; line-height:1.55; border-radius:0 3px 3px 0; margin:0.6em 0; }
+pre code { background:none; padding:0; color:var(--text); }
+.side { float:right; clear:right; margin-right:-36%; width:30%; font-size:0.85em; color:var(--muted); background:#f0ebe1; padding:0.6em 0.9em; border-left:2px solid var(--border); margin-top:0.4em; line-height:1.5; }
+.step { background:white; border:1px solid var(--border); border-radius:4px; padding:1em 1.2em; margin:1.2em 0; position:relative; }
+.step::before { content:attr(data-n); position:absolute; top:-0.7em; left:0.6em; background:var(--step); color:white; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; font-size:0.8em; padding:0.2em 0.7em; border-radius:3px; letter-spacing:0.05em; }
+.step h3 { font-family:"Helvetica Neue",Arial,sans-serif; margin:0 0 0.6em 0; color:var(--text); font-size:1.1em; }
+.vibe { background:var(--vibe-bg); border-left:3px solid var(--vibe); padding:0.7em 1em; margin:1.2em 0; font-size:0.92em; border-radius:0 3px 3px 0; }
+.vibe::before { content:"💡 Vibe coding 视角"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--vibe); display:block; margin-bottom:0.3em; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; }
+.win { background:#e8f0e8; border:1px solid var(--vibe); border-radius:4px; padding:1em 1.2em; margin:2em 0; }
+.win::before { content:"🏁 你刚完成了什么"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--vibe); display:block; margin-bottom:0.5em; font-size:0.85em; letter-spacing:0.05em; text-transform:uppercase; }
+table { width:100%; border-collapse:collapse; margin:1em 0; font-size:0.92em; }
+th, td { border-bottom:1px solid var(--border); padding:0.5em 0.7em; text-align:left; vertical-align:top; }
+th { background:var(--code-bg); font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; color:var(--muted); }
+a { color:var(--accent); text-decoration:none; border-bottom:1px dotted var(--accent); }
+.next-lessons { background:var(--code-bg); border-radius:4px; padding:1em 1.2em; margin:2em 0; font-size:0.95em; }
+.next-lessons::before { content:"📚 配套 & 下一步"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--muted); display:block; margin-bottom:0.5em; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; }
+ul, ol { margin:0.5em 0; padding-left:1.4em; }
+li { margin:0.2em 0; }
+.meta { color:var(--muted); font-size:0.9em; margin-top:0.5em; }
+@media print { body { background:white; max-width:100%; font-size:11pt; padding:0 0.5in; } .step, .vibe, .win, .next-lessons { break-inside:avoid; } h2 { page-break-after:avoid; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="badge">LESSON 0007</span>模块系统 + tsconfig<span class="sub">20 分钟 · 读懂 Next.js 项目结构</span></h1>
+  <p class="meta">对齐 <a href="../MISSION.md">MISSION</a> · <a href="../CURRICULUM.md">CURRICULUM</a> · 前置：<a href="./0006-async-promise-await.html">L0006</a> · 后续：<a href="./0008-vibe-coding-read-ai-code.html">L0008</a></p>
+</header>
+
+<p>Next.js 项目打开一堆 <code>import</code> 和一个 <code>tsconfig.json</code>。这节课让你知道每行什么意思，看到 <code>@/</code> 别懵，看到 <code>import type</code> 知道是只类型，看到 <code>tsconfig.json</code> 关键字段不再发怵。</p>
+
+<h2>ES Module 语法速读</h2>
+
+<pre><code>// =============================================
+// 命名导出（推荐）
+// =============================================
+// utils.ts
+export function add(a: number, b: number) { return a + b; }
+export const PI = 3.14;
+export interface User { id: number; name: string }
+export type Status = 'ok' | 'err';
+
+// main.ts
+import { add, PI } from "./utils";
+import type { User, Status } from "./utils";   // 只导类型，运行时无开销
+
+// =============================================
+// 默认导出（一个文件一个主类/主组件时用）
+// =============================================
+// Button.tsx
+export default function Button() { ... }
+
+// 任意名字导入
+import Button from "./Button";
+import Btn from "./Button";   // 都可以
+
+// =============================================
+// 命名空间导入
+// =============================================
+import * as utils from "./utils";
+utils.add(1, 2);
+
+// =============================================
+// 重新导出（barrel 文件常用）
+// =============================================
+// index.ts
+export { add } from "./math";
+export { Button } from "./Button";
+export * from "./types";</code></pre>
+
+<p class="side">Java 类比：<br><code>export</code> ≈ <code>public</code> 类/方法；不 export = package-private。<br>Java 的 <code>import</code> 只导入类型；TS 的 <code>import</code> 同时导入<strong>类型和值</strong>（运行时还要用）。这就是为什么需要 <code>import type</code> 来明确"我只要类型"。</p>
+
+<h2><code>import type</code> — TS 独有，关键</h2>
+
+<pre><code>// 普通 import：类型 + 值都打包进 bundle
+import { User } from "./types";
+
+// import type：只在编译期用，运行时整行消失
+import type { User } from "./types";
+
+// Next.js / tRPC 大量用 import type 优化打包体积
+import type { NextPage } from "next";
+import type { AppRouter } from "./server/router";
+
+// 整模块只类型
+import type * as Types from "./types";</code></pre>
+
+<h2><code>tsconfig.json</code> 关键字段（看 Next.js 必备）</h2>
+
+<pre><code>{
+  // === 必看 4 个 ===
+  "target": "ES2022",            // 编译到哪个 JS 版本
+  "module": "ESNext",            // 模块系统
+  "moduleResolution": "Bundler", // Next.js 用 Bundler（Vite/Webpack 也用）
+  "strict": true,                // 全套严格检查（强烈推荐开）
+
+  // === Next.js 常见 ===
+  "jsx": "preserve",             // JSX 不编译，让 Next 处理
+  "incremental": true,           // 增量编译，加速
+  "esModuleInterop": true,       // 允许 import React from "react"
+
+  // === 路径别名（看到 @/ 就靠它）===
+  "baseUrl": ".",
+  "paths": {
+    "@/*": ["./src/*"],          // @/components → ./src/components
+    "~//*": ["./*"]
+  },
+
+  // === 类型根目录 ===
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+}</code></pre>
+
+<h3><code>strict: true</code> 包含哪些子项</h3>
+
+<table>
+<tr><th>字段</th><th>作用</th></tr>
+<tr><td><code>noImplicitAny</code></td><td>禁止隐式 any（参数漏标类型就报错）</td></tr>
+<tr><td><code>strictNullChecks</code></td><td><code>null</code> / <code>undefined</code> 必须显式处理</td></tr>
+<tr><td><code>strictFunctionTypes</code></td><td>函数类型严格校验</td></tr>
+<tr><td><code>strictBindCallApply</code></td><td><code>bind</code>/<code>call</code>/<code>apply</code> 类型严格</td></tr>
+<tr><td><code>strictPropertyInitialization</code></td><td>class 字段必须初始化</td></tr>
+<tr><td><code>noImplicitThis</code></td><td>this 类型必须明确</td></tr>
+<tr><td><code>alwaysStrict</code></td><td>每个文件自动加 <code>"use strict"</code></td></tr>
+<tr><td><code>useUnknownInCatchVariables</code></td><td>catch (e) 的 e 是 unknown（必须 narrow）</td></tr>
+</table>
+
+<h2>读懂 Next.js 项目结构的 5 步</h2>
+
+<pre><code>my-nextjs-app/
+├── app/                          # App Router（Next.js 13+）
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── api/
+│       └── users/route.ts        # 后端 API
+├── components/                   # 共享组件
+├── lib/                          # 工具函数
+├── prisma/                       # Prisma schema（Drizzle 类似）
+├── tsconfig.json                 # ← 关键
+├── next.config.js
+├── package.json
+└── next-env.d.ts                 # Next 自动生成，类型辅助</code></pre>
+
+<p>看到 <code>tsconfig.json</code> 里 <code>"paths": { "@/*": ["./src/*"] }</code>，那 <code>import { foo } from "@/lib/foo"</code> 就是从 <code>src/lib/foo</code> 取。</p>
+
+<div class="vibe">
+<strong>vibe coding 实战</strong>：
+<ul>
+  <li><strong>看到 <code>import type</code></strong>：知道运行时无开销，是纯类型 — AI 大量用做类型导入优化</li>
+  <li><strong>看到 <code>@/</code> 开头的 import</strong>：路径别名，去 <code>tsconfig.json</code> 的 <code>paths</code> 字段找映射</li>
+  <li><strong>让 AI 改 Next.js 项目</strong>前：自己先打开 <code>tsconfig.json</code> 看 <code>strict</code> 和 <code>paths</code>，告诉 AI 当前配置</li>
+  <li><strong>AI 给的代码 import 报错</strong>？99% 是路径错（漏 <code>@/</code> 或文件后缀），10% 是 <code>tsconfig.json</code> 没配对应 alias</li>
+</ul>
+</div>
+
+<h2>Quiz 自测（5 题）</h2>
+<ol>
+  <li><code>import type</code> 与 <code>import</code> 的关键区别？<br>
+    A. <code>import type</code> 只能从 .d.ts 文件导入 &nbsp; B. <code>import type</code> 运行时无开销（编译期擦除） &nbsp; C. <code>import type</code> 必须显式声明</li>
+  <li>默认导出命名限制？<br>
+    A. 必须叫 default &nbsp; B. 导入时可任意命名 &nbsp; C. 一个文件只能有一个</li>
+  <li><code>tsconfig.json</code> 的 <code>paths</code> 字段干啥的？<br>
+    A. 编译目标 &nbsp; B. 路径别名映射 &nbsp; C. 严格模式</li>
+  <li><code>strict: true</code> 不包含？<br>
+    A. <code>noImplicitAny</code> &nbsp; B. <code>strictNullChecks</code> &nbsp; C. <code>noUnusedLocals</code>（这个不在 strict 里）</li>
+  <li>看到 <code>import { foo } from "@/lib/foo"</code> 但编译报「cannot find module」？<br>
+    A. <code>foo.ts</code> 不存在 &nbsp; B. <code>tsconfig.json</code> 没配 <code>@/</code> alias &nbsp; C. 两者都可能</li>
+</ol>
+<details><summary>答案</summary>
+<p>1. B · 2. B · 3. B · 4. C · 5. C</p>
+</details>
+
+<div class="win">
+<strong>🏁 你完成了</strong>
+<ul>
+  <li>能读懂 ES Module 的 import / export / import type</li>
+  <li>知道 <code>tsconfig.json</code> 关键字段（target / module / strict / paths）</li>
+  <li>看到 <code>@/</code> 别名知道去哪查映射</li>
+  <li>能诊断 import 报错的常见原因</li>
+</ul>
+</div>
+
+<div class="next-lessons">
+<ul>
+  <li>📘 配套速查表：<a href="../reference/0001-typescript-for-java-devs.html">TS for Java Devs §9 模块系统</a></li>
+  <li>🔜 <strong>Lesson 0008</strong>：<a href="./0008-vibe-coding-read-ai-code.html">Vibe coding 实战：读 AI 代码</a></li>
+  <li>🎯 <a href="../MISSION.md">MISSION</a> · <a href="../CURRICULUM.md">CURRICULUM</a></li>
+</ul>
+</div>
+
+</body>
+</html>

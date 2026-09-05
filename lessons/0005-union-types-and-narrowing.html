@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Lesson 0005 — 联合类型与 Narrowing</title>
+<style>
+:root { --bg:#fbf8f3; --text:#1a1a2e; --accent:#9c2c2c; --muted:#6b6457; --code-bg:#f4f0e8; --border:#d4cfc4; --vibe:#2c5c2c; --vibe-bg:#e8e8d8; --step:#2c4c9c; }
+* { box-sizing: border-box; }
+body { background:var(--bg); color:var(--text); font-family:Georgia,"ETBook","Times New Roman",serif; max-width:760px; margin:2.5rem auto; padding:0 2rem; line-height:1.65; font-size:16px; }
+header { border-bottom:1px solid var(--border); padding-bottom:1.2em; margin-bottom:1.5em; }
+h1 { font-family:"Helvetica Neue",Arial,sans-serif; font-size:2em; margin:0 0 0.2em 0; letter-spacing:-0.01em; }
+h1 .badge { display:inline-block; font-size:0.4em; background:var(--accent); color:white; padding:0.2em 0.6em; border-radius:3px; vertical-align:middle; margin-right:0.5em; letter-spacing:0.05em; font-weight:600; }
+h1 .sub { display:block; font-size:0.55em; font-weight:400; color:var(--muted); margin-top:0.3em; }
+h2 { font-family:"Helvetica Neue",Arial,sans-serif; font-size:1.35em; margin:2em 0 0.5em 0; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:0.2em; }
+code { font-family:Menlo,Consolas,"Courier New",monospace; background:var(--code-bg); padding:0.1em 0.35em; border-radius:2px; font-size:0.88em; color:#5a2c2c; }
+pre { background:var(--code-bg); padding:1em 1.2em; border-left:3px solid var(--accent); overflow-x:auto; font-size:0.88em; line-height:1.55; border-radius:0 3px 3px 0; margin:0.6em 0; }
+pre code { background:none; padding:0; color:var(--text); }
+.side { float:right; clear:right; margin-right:-36%; width:30%; font-size:0.85em; color:var(--muted); background:#f0ebe1; padding:0.6em 0.9em; border-left:2px solid var(--border); margin-top:0.4em; line-height:1.5; }
+.step { background:white; border:1px solid var(--border); border-radius:4px; padding:1em 1.2em; margin:1.2em 0; position:relative; }
+.step::before { content:attr(data-n); position:absolute; top:-0.7em; left:0.6em; background:var(--step); color:white; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; font-size:0.8em; padding:0.2em 0.7em; border-radius:3px; letter-spacing:0.05em; }
+.step h3 { font-family:"Helvetica Neue",Arial,sans-serif; margin:0 0 0.6em 0; color:var(--text); font-size:1.1em; }
+.vibe { background:var(--vibe-bg); border-left:3px solid var(--vibe); padding:0.7em 1em; margin:1.2em 0; font-size:0.92em; border-radius:0 3px 3px 0; }
+.vibe::before { content:"💡 Vibe coding 视角"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--vibe); display:block; margin-bottom:0.3em; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; }
+.win { background:#e8f0e8; border:1px solid var(--vibe); border-radius:4px; padding:1em 1.2em; margin:2em 0; }
+.win::before { content:"🏁 你刚完成了什么"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--vibe); display:block; margin-bottom:0.5em; font-size:0.85em; letter-spacing:0.05em; text-transform:uppercase; }
+table { width:100%; border-collapse:collapse; margin:1em 0; font-size:0.92em; }
+th, td { border-bottom:1px solid var(--border); padding:0.5em 0.7em; text-align:left; vertical-align:top; }
+th { background:var(--code-bg); font-family:"Helvetica Neue",Arial,sans-serif; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; color:var(--muted); }
+a { color:var(--accent); text-decoration:none; border-bottom:1px dotted var(--accent); }
+.next-lessons { background:var(--code-bg); border-radius:4px; padding:1em 1.2em; margin:2em 0; font-size:0.95em; }
+.next-lessons::before { content:"📚 配套 & 下一步"; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:700; color:var(--muted); display:block; margin-bottom:0.5em; font-size:0.82em; letter-spacing:0.05em; text-transform:uppercase; }
+ul, ol { margin:0.5em 0; padding-left:1.4em; }
+li { margin:0.2em 0; }
+.meta { color:var(--muted); font-size:0.9em; margin-top:0.5em; }
+@media print { body { background:white; max-width:100%; font-size:11pt; padding:0 0.5in; } .step, .vibe, .win, .next-lessons { break-inside:avoid; } h2 { page-break-after:avoid; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="badge">LESSON 0005</span>联合类型与 Narrowing<span class="sub">30 分钟 · TS 比 Java 强的地方</span></h1>
+  <p class="meta">对齐 <a href="../MISSION.md">MISSION</a> · <a href="../CURRICULUM.md">CURRICULUM</a> · 前置：<a href="./0004-generics-and-utility-types.html">L0004</a> · 后续：<a href="./0006-async-promise-await.html">L0006</a></p>
+</header>
+
+<p>这是 TS <strong>真正比 Java 优雅</strong>的地方。Java 用 sealed interface + switch pattern matching 模拟（Java 21 才稳定），TS 一开始就有，且零运行时开销。</p>
+
+<h2>联合类型：值可以是多个类型之一</h2>
+
+<pre><code>// 基础联合
+let value: string | number;
+value = "hello";   // ✅
+value = 42;        // ✅
+value = true;      // ❌ TS 报错
+
+// 字面量联合（最常用）
+type Status = 'pending' | 'active' | 'banned';
+type Direction = 'up' | 'down' | 'left' | 'right';
+
+// 对象联合
+type Result =
+  | { ok: true; value: number }
+  | { ok: false; error: string };</code></pre>
+
+<p class="side">Java 类比：<br>TS <code>string | number</code> ≈ Java 的 <code>Object</code> 上界，但 TS 不需要 instanceof 就能在编译期限制可赋的值。<br>TS discriminated union ≈ Java 21 <code>sealed interface + permits + switch pattern</code>，但 TS 从第一天就有。</p>
+
+<h2>Narrowing：让 TS 在分支里「缩小」类型</h2>
+
+<h3>typeof 守卫（原始类型）</h3>
+<pre><code>function padLeft(value: string | number, padding: number): string {
+  if (typeof value === "string") {
+    // 这里 value 被缩窄为 string
+    return " ".repeat(padding) + value;
+  }
+  // 这里 value 被缩窄为 number
+  return " ".repeat(padding) + value.toString();
+}</code></pre>
+
+<h3>in 守卫（对象字段）</h3>
+<pre><code>type Fish = { swim: () =&gt; void };
+type Bird = { fly: () =&gt; void };
+
+function move(animal: Fish | Bird) {
+  if ("swim" in animal) {
+    animal.swim();  // 缩窄为 Fish
+  } else {
+    animal.fly();   // 缩窄为 Bird
+  }
+}</code></pre>
+
+<h3>instanceof 守卫（类实例）</h3>
+<pre><code>function logError(e: Error | string) {
+  if (e instanceof Error) {
+    return e.message;   // 缩窄为 Error
+  }
+  return e;             // 缩窄为 string
+}</code></pre>
+
+<h3>自定义类型谓词（最灵活）</h3>
+<pre><code>interface User { id: number; name: string }
+
+function isUser(x: unknown): x is User {
+  return typeof x === "object" &amp;&amp;
+         x !== null &amp;&amp;
+         "id" in x &amp;&amp;
+         typeof (x as any).id === "number";
+}
+
+// 用法
+const data: unknown = JSON.parse(someStr);
+if (isUser(data)) {
+  console.log(data.name);   // TS 知道 data 是 User
+}</code></pre>
+
+<h2>Discriminated Union：state machine 的标准写法</h2>
+
+<p>这是 TS 最强大的模式，AI 写 React state / API response 都靠它：</p>
+<pre><code>// =============================================
+// 异步加载状态机（Next.js / React 高频）
+// =============================================
+type AsyncState&lt;T&gt; =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'success'; data: T }
+  | { status: 'error'; error: Error };
+
+// 渲染组件时根据 status narrow
+function render&lt;T&gt;(state: AsyncState&lt;T&gt;) {
+  switch (state.status) {
+    case 'idle':
+      return null;
+    case 'loading':
+      return 'Loading...';
+    case 'success':
+      return state.data;      // TS 知道 data 存在
+    case 'error':
+      return state.error.message;
+    // 不需要 default！TS 知道已穷尽所有 case
+  }
+}</code></pre>
+
+<h2>穷尽性检查 — TS 帮你兜底</h2>
+
+<pre><code>type Shape =
+  | { kind: 'circle'; radius: number }
+  | { kind: 'square'; side: number };
+
+function area(s: Shape): number {
+  switch (s.kind) {
+    case 'circle': return Math.PI * s.radius ** 2;
+    case 'square': return s.side ** 2;
+    // 假设你忘了处理 circle：
+    // TS 不报错，但 s 可能是 never
+  }
+}
+
+// 加 assertNever 兜底
+function assertNever(x: never): never {
+  throw new Error("Unhandled: " + JSON.stringify(x));
+}
+
+function areaSafe(s: Shape): number {
+  switch (s.kind) {
+    case 'circle': return Math.PI * s.radius ** 2;
+    case 'square': return s.side ** 2;
+    default: return assertNever(s);  // 漏 case 时 TS 编译期报错
+  }
+}</code></pre>
+
+<div class="vibe">
+<strong>vibe coding 实战</strong>：
+<ul>
+  <li><strong>状态机 = discriminated union</strong>：让 AI 用 <code>type State = { kind: ... } | { kind: ... }</code> 写，AI 几乎能自动写出穷尽的 switch</li>
+  <li><strong>API response 必用</strong>：<code>{ status: 'ok'; data: X } | { status: 'err'; error: string }</code>，AI 写前端组件时会按 status 分支渲染</li>
+  <li><strong>想偷懒就用 <code>unknown + 自定义谓词</code></strong>：解析外部数据（JSON.parse、localStorage）时先 narrow，比类型断言安全</li>
+</ul>
+读 Next.js 源码，<strong>看到 <code>status:</strong>、<code>kind:</strong>、<code>type:</strong> 这种判别字段，就是 discriminated union</strong>。
+</div>
+
+<h2>Quiz 自测（5 题）</h2>
+<ol>
+  <li><code>let x: string | number</code> 能赋 <code>true</code> 吗？<br>A. 能 &nbsp; B. 不能</li>
+  <li>discriminated union 的判别字段叫什么？<br>A. 任意字段 &nbsp; B. 类型常量字段（如 <code>kind</code>、<code>status</code>） &nbsp; C. 函数</li>
+  <li><code>typeof x === 'string'</code> 在 <code>x: string | number</code> 分支里把 x 缩窄成？<br>A. string &nbsp; B. number &nbsp; C. string | number</li>
+  <li>自定义类型谓词签名？<br>A. <code>(x: any) =&gt; boolean</code> &nbsp; B. <code>(x: T): x is U</code> &nbsp; C. <code>(x: T) =&gt; U</code></li>
+  <li>vibe coding 写状态机，AI 最常用哪种模式？<br>A. 多个 if/else &nbsp; B. discriminated union + switch &nbsp; C. 抛错</li>
+</ol>
+<details><summary>答案</summary>
+<p>1. B · 2. B · 3. A · 4. B · 5. B</p>
+</details>
+
+<div class="win">
+<strong>🏁 你完成了</strong>
+<ul>
+  <li>理解联合类型与 narrowing 的核心机制</li>
+  <li>能读懂 discriminated union 模式（Next.js / React 高频）</li>
+  <li>会用 4 种守卫（typeof / in / instanceof / 自定义谓词）</li>
+  <li>在 vibe coding 时能写出 AI 友好的状态机契约</li>
+</ul>
+</div>
+
+<div class="next-lessons">
+<ul>
+  <li>📘 配套速查表：<a href="../reference/0001-typescript-for-java-devs.html">TS for Java Devs §5 联合类型与 narrowing + §6 类型守卫</a></li>
+  <li>🔜 <strong>Lesson 0006</strong>：<a href="./0006-async-promise-await.html">Async / Promise / await — 读懂异步链</a></li>
+  <li>🎯 <a href="../MISSION.md">MISSION</a> · <a href="../CURRICULUM.md">CURRICULUM</a></li>
+</ul>
+</div>
+
+</body>
+</html>
